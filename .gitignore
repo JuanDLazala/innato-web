@@ -15,3 +15,9 @@ desktop.ini
 # Logs
 *.log
 npm-debug.log*
+
+# Source PNG screenshots (los JPG comprimidos sí se suben)
+assets_stable/social/*-latest.png
+
+# Source PNG screenshots (los JPG comprimidos sí se suben)
+assets_stable/social/*-latest.png
