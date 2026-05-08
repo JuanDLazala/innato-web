@@ -65,6 +65,47 @@ git commit -m "Descripción del cambio"
 git push
 ```
 
+## Cómo actualizar el feed (sección "Lo último en INNATO")
+
+Todo el contenido dinámico vive en **`feed.json`** (raíz del proyecto). Cambias el JSON y haces push, Netlify redeploya solo en ~30 seg.
+
+### Estructura
+
+```json
+{
+  "social": {
+    "tiktok":    { "url": "...", "title": "...", "thumbnail": "assets_stable/social/...", "date": "Hoy" },
+    "instagram": { "url": "...", "title": "...", "thumbnail": "...", "date": "Ayer" },
+    "facebook":  { "url": "...", "title": "...", "thumbnail": "...", "date": "hace 2 días" }
+  },
+  "blog": [
+    {
+      "slug": "primer-post",
+      "title": "Título del post",
+      "excerpt": "Resumen breve...",
+      "date": "2026-05-08",
+      "thumbnail": "assets_stable/blog/primer-post.jpg",
+      "content": "Contenido completo (Markdown o HTML)..."
+    }
+  ]
+}
+```
+
+### Workflow para una nueva publicación de TikTok / Instagram / Facebook
+
+1. Tomar screenshot del post (1280×720 aprox).
+2. Guardarlo en `assets_stable/social/` (ej. `tiktok-2026-05-12.jpg`).
+3. Editar `feed.json`: actualizar `url`, `title`, `thumbnail` y `date` de la red correspondiente.
+4. `git add . && git commit -m "feed: nuevo post de TikTok" && git push`.
+
+### Workflow para un nuevo post de blog
+
+1. Agregar un objeto **al inicio** del array `blog` en `feed.json` (el primero del array es el destacado en la home).
+2. Si tiene imagen, guardarla en `assets_stable/blog/` y referenciarla en `thumbnail`.
+3. `git add . && git commit -m "blog: nuevo post X" && git push`.
+
+> El detalle del post (página individual al hacer click en una tarjeta) se implementa en una segunda iteración. Por ahora la tarjeta lleva a `#blog/<slug>`.
+
 ## Notas técnicas
 - El sitio usa Tailwind y React desde CDN (sin build step). Para producción seria conviene migrar a un build estático, pero para el MVP esto funciona perfecto.
-- `netlify.toml` ya incluye headers de seguridad básicos y cache largo para las imágenes.
+- `netlify.toml` incluye headers de seguridad, cache largo (1 año) para `/assets_stable/*` y cache corto (60 seg) para `/feed.json`.

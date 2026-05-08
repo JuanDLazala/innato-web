@@ -263,47 +263,107 @@
             </section>
         );
 
-        const LatestFeed = () => (
-            <section className="py-20 px-6 border-y border-white/5 bg-white/[0.01]">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex justify-between items-end mb-12">
-                        <div>
-                            <Tag className="mb-4">Flujo Constante</Tag>
-                            <h2 className="font-display text-4xl md:text-5xl">Lo último en INNATO</h2>
-                        </div>
-                        <button className="hidden md:flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">
-                            Ver todo el feed <Icon name="arrow-right" size={12} />
-                        </button>
-                    </div>
+        const LatestFeed = () => {
+            const [feed, setFeed] = useState(null);
+            const [error, setError] = useState(false);
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[
-                            { type: 'TikTok', title: '¿Por qué fallan las encuestas? Análisis estructural.', date: 'Hoy', platform: 'tiktok', img: 'assets_stable/social/feed-1.jpg', link: 'https://tiktok.com/@innatoec' },
-                            { type: 'YouTube', title: 'Entrevista: El futuro de la fiscalización en Ecuador', date: 'Ayer', platform: 'youtube', img: 'assets_stable/social/feed-2.jpg', link: 'https://www.youtube.com/@innatoec' },
-                            { type: 'Blog', title: 'La trampa narrativa: desenmascarando el ruido', date: 'hace 2 días', platform: 'eye', img: 'assets_stable/social/feed-3.jpg', link: '#' },
-                            { type: 'Instagram', title: 'Contexto: Qué pasa realmente en la Asamblea', date: 'hace 3 días', platform: 'instagram', img: 'assets_stable/nico-main.jpg', link: 'https://instagram.com/innatoec' }
-                        ].map((post, i) => (
-                            <a href={post.link} target="_blank" rel="noopener noreferrer" key={i} className="group p-6 border border-white/5 bg-white/5 hover-lift overflow-hidden block cursor-pointer">
-                                <div className="relative mb-6 -mx-6 -mt-6 aspect-video overflow-hidden">
-                                    <img src={post.img} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500" alt="" />
-                                    <div className="absolute top-4 left-4 p-2 bg-black/60 backdrop-blur-md rounded text-white/60">
-                                        <Icon name={post.platform} size={14} />
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center mb-4">
-                                    <Tag className="bg-transparent border-none p-0 text-white/30">{post.type}</Tag>
-                                    <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">{post.date}</span>
-                                </div>
-                                <h3 className="font-display text-xl mb-6 group-hover:italic transition-all leading-snug">{post.title}</h3>
-                                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-white/20 group-hover:text-white transition-colors">
-                                    Ver contenido <Icon name="arrow-right" size={12} />
-                                </div>
-                            </a>
-                        ))}
+            useEffect(() => {
+                fetch('feed.json?ts=' + Date.now())
+                    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+                    .then(setFeed)
+                    .catch(() => setError(true));
+            }, []);
+
+            // Construir las 4 tarjetas a partir del JSON.
+            // Orden fijo: TikTok, Instagram, Facebook, Blog (último post).
+            const buildCards = () => {
+                if (!feed) return [];
+                const s = feed.social || {};
+                const latestBlog = (feed.blog && feed.blog.length > 0) ? feed.blog[0] : null;
+                return [
+                    s.tiktok && { type: 'TikTok', platform: 'tiktok', title: s.tiktok.title, date: s.tiktok.date, img: s.tiktok.thumbnail, link: s.tiktok.url, external: true },
+                    s.instagram && { type: 'Instagram', platform: 'instagram', title: s.instagram.title, date: s.instagram.date, img: s.instagram.thumbnail, link: s.instagram.url, external: true },
+                    s.facebook && { type: 'Facebook', platform: 'facebook', title: s.facebook.title, date: s.facebook.date, img: s.facebook.thumbnail, link: s.facebook.url, external: true },
+                    latestBlog
+                        ? { type: 'Blog', platform: 'eye', title: latestBlog.title, date: latestBlog.date, img: latestBlog.thumbnail, link: '#blog/' + latestBlog.slug, external: false }
+                        : { type: 'Blog', platform: 'eye', title: 'Próximo análisis en preparación', date: 'Pronto', img: 'assets_stable/social/feed-3.jpg', link: null, external: false, placeholder: true }
+                ].filter(Boolean);
+            };
+
+            const cards = buildCards();
+
+            return (
+                <section className="py-20 px-6 border-y border-white/5 bg-white/[0.01]">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex justify-between items-end mb-12">
+                            <div>
+                                <Tag className="mb-4">Flujo Constante</Tag>
+                                <h2 className="font-display text-4xl md:text-5xl">Lo último en INNATO</h2>
+                            </div>
+                            <button className="hidden md:flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                                Ver todo el feed <Icon name="arrow-right" size={12} />
+                            </button>
+                        </div>
+
+                        {error && (
+                            <div className="text-white/30 font-mono text-xs uppercase tracking-widest text-center py-12">
+                                No se pudo cargar el feed. Intentalo más tarde.
+                            </div>
+                        )}
+
+                        {!feed && !error && (
+                            <div className="text-white/20 font-mono text-xs uppercase tracking-widest text-center py-12">
+                                Cargando últimas publicaciones…
+                            </div>
+                        )}
+
+                        {feed && (
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {cards.map((post, i) => {
+                                    const inner = (
+                                        <React.Fragment>
+                                            <div className="relative mb-6 -mx-6 -mt-6 aspect-video overflow-hidden">
+                                                <img src={post.img} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500" alt="" />
+                                                <div className="absolute top-4 left-4 p-2 bg-black/60 backdrop-blur-md rounded text-white/60">
+                                                    <Icon name={post.platform} size={14} />
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between items-center mb-4">
+                                                <Tag className="bg-transparent border-none p-0 text-white/30">{post.type}</Tag>
+                                                <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">{post.date}</span>
+                                            </div>
+                                            <h3 className="font-display text-xl mb-6 group-hover:italic transition-all leading-snug">{post.title}</h3>
+                                            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-white/20 group-hover:text-white transition-colors">
+                                                {post.placeholder ? 'Próximamente' : 'Ver contenido'} <Icon name="arrow-right" size={12} />
+                                            </div>
+                                        </React.Fragment>
+                                    );
+                                    if (post.placeholder || !post.link) {
+                                        return (
+                                            <div key={i} className="group p-6 border border-white/5 bg-white/5 overflow-hidden block opacity-60">
+                                                {inner}
+                                            </div>
+                                        );
+                                    }
+                                    if (post.external) {
+                                        return (
+                                            <a href={post.link} target="_blank" rel="noopener noreferrer" key={i} className="group p-6 border border-white/5 bg-white/5 hover-lift overflow-hidden block cursor-pointer">
+                                                {inner}
+                                            </a>
+                                        );
+                                    }
+                                    return (
+                                        <a href={post.link} key={i} className="group p-6 border border-white/5 bg-white/5 hover-lift overflow-hidden block cursor-pointer">
+                                            {inner}
+                                        </a>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
-                </div>
-            </section>
-        );
+                </section>
+            );
+        };
 
         const SocialIndex = () => (
             <section className="py-24 px-6 max-w-7xl mx-auto">

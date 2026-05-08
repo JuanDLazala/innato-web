@@ -1,0 +1,24 @@
+{
+  "_comment": "Editar este archivo y hacer git push para actualizar el feed de la home. Cache: 60 segundos.",
+  "social": {
+    "tiktok": {
+      "url": "https://www.tiktok.com/@innatoec/photo/7637515059467537684",
+      "title": "Análisis: lo que están pasando por alto",
+      "thumbnail": "assets_stable/social/feed-1.jpg",
+      "date": "Hoy"
+    },
+    "instagram": {
+      "url": "https://www.instagram.com/p/DYEz4BKubqY/",
+      "title": "Contexto: qué pasa realmente en la Asamblea",
+      "thumbnail": "assets_stable/nico-main.jpg",
+      "date": "Ayer"
+    },
+    "facebook": {
+      "url": "https://www.facebook.com/reel/1298248928414684/?s=single_unit",
+      "title": "Reel: análisis de la semana",
+      "thumbnail": "assets_stable/social/feed-2.jpg",
+      "date": "hace 2 días"
+    }
+  },
+  "blog": []
+}
