@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INNATO | Medio Digital Ecuatoriano</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Newsreader', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        innato: {
+                            red: '#E11D48',
+                            dark: '#0A0A0B',
+                            surface: '#121214',
+                            border: '#1F1F23',
+                            muted: '#6B7280'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: oklch(12% 0.015 260);
+            --surface: oklch(18% 0.02 260);
+            --fg: oklch(98% 0.005 260);
+            --muted: oklch(65% 0.01 260);
+            --border: oklch(25% 0.02 260);
+            --accent: oklch(55% 0.22 25);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-display { font-family: 'Newsreader', serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3BaseFilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/feTurbulence%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            background-color: var(--surface);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        .red-thread {
+            position: relative;
+        }
+        .red-thread::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--accent);
+            opacity: 0.4;
+        }
+
+        .video-aspect {
+            aspect-ratio: 16 / 9;
+        }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- COMPONENTS ---
+
+        const Icon = ({ name, size = 20, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {name === 'play' && <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" />}
+                {name === 'arrow-right' && <path d="M5 12h14M12 5l7 7-7 7" />}
+                {name === 'eye' && <React.Fragment><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></React.Fragment>}
+                {name === 'radar' && <React.Fragment><circle cx="12" cy="12" r="2" /><path d="M12 19V5M5 12h14" /></React.Fragment>}
+                {name === 'search' && <React.Fragment><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></React.Fragment>}
+                {name === 'youtube' && <React.Fragment><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.42a2.78 2.78 0 0 0-1.94 2C1 8.14 1 12 1 12s0 3.86.42 5.58a2.78 2.78 0 0 0 1.94 2c1.71.42 8.6.42 8.6.42s6.88 0 8.6-.42a2.78 2.78 0 0 0 1.94-2C23 15.86 23 12 23 12s0-3.86-.42-5.58z" /><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" /></React.Fragment>}
+                {name === 'instagram' && <React.Fragment><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></React.Fragment>}
+                {name === 'tiktok' && <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />}
+                {name === 'facebook' && <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />}
+                {name === 'mail' && <React.Fragment><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></React.Fragment>}
+                {name === 'menu' && <React.Fragment><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></React.Fragment>}
+                {name === 'x' && <React.Fragment><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></React.Fragment>}
+            </svg>
+        );
+
+        const Nav = ({ activeView, setView }) => {
+            const [scrolled, setScrolled] = useState(false);
+            const [mobileMenu, setMobileMenu] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setScrolled(window.scrollY > 20);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const navLinks = [
+                { id: 'home', label: 'Inicio' },
+                { id: 'videos', label: 'Videos' },
+                { id: 'entrevistas', label: 'Entrevistas' },
+                { id: 'blog', label: 'Blog' },
+                { id: 'programas', label: 'Programas' },
+                { id: 'nosotros', label: 'Nosotros' }
+            ];
+
+            return (
+                <nav className={`fixed top-0 w-full z-[1000] transition-all duration-500 ${scrolled || mobileMenu ? 'bg-black/90 backdrop-blur-xl py-3 border-b border-white/10' : 'py-6'}`}>
+                    <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setView('home')}>
+                            <img src="assets_stable/logo.jpg" alt="INNATO" className="h-8 md:h-10" />
+                        </div>
+
+                        {/* Desktop Links */}
+                        <div className="hidden lg:flex gap-8 text-[11px] font-mono uppercase tracking-[0.2em] text-white/50">
+                            {navLinks.map(link => (
+                                <button 
+                                    key={link.id}
+                                    onClick={() => setView(link.id)}
+                                    className={`hover:text-white transition-colors ${activeView === link.id ? 'text-white red-thread' : ''}`}
+                                >
+                                    {link.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="flex items-center gap-6">
+                            <button className="hidden md:flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-innato-red border border-innato-red/30 px-4 py-2 hover:bg-innato-red hover:text-white transition-all">
+                                <span className="w-1.5 h-1.5 rounded-full bg-innato-red animate-pulse"></span>
+                                En Vivo
+                            </button>
+                            <button className="lg:hidden text-white" onClick={() => setMobileMenu(!mobileMenu)}>
+                                <Icon name={mobileMenu ? 'x' : 'menu'} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Mobile Menu */}
+                    {mobileMenu && (
+                        <div className="lg:hidden absolute top-full left-0 w-full bg-black/95 backdrop-blur-2xl border-b border-white/10 p-8 flex flex-col gap-6 text-center">
+                            {navLinks.map(link => (
+                                <button 
+                                    key={link.id}
+                                    onClick={() => { setView(link.id); setMobileMenu(false); }}
+                                    className={`text-xl font-display italic ${activeView === link.id ? 'text-innato-red' : 'text-white'}`}
+                                >
+                                    {link.label}
+                                </button>
+                            ))}
+                            <button className="flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-widest text-innato-red mt-4">
+                                <span className="w-2 h-2 rounded-full bg-innato-red animate-pulse"></span>
+                                Señal en vivo
+                            </button>
+                        </div>
+                    )}
+                </nav>
+            );
+        };
+
+        const Tag = ({ children, className = "" }) => (
+            <span className={`text-[10px] font-mono uppercase tracking-[0.2em] px-2 py-1 bg-white/5 border border-white/10 text-white/60 ${className}`}>
+                {children}
+            </span>
+        );
+
+        const Reveal = ({ children, className = "" }) => {
+            const ref = useRef(null);
+            useEffect(() => {
+                const observer = new IntersectionObserver(([entry]) => {
+                    if (entry.isIntersecting) entry.target.classList.add('active');
+                }, { threshold: 0.1 });
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, []);
+            return <div ref={ref} className={`reveal ${className}`}>{children}</div>;
+        };
+
+        // --- SECTIONS ---
+
+        const HomeHero = () => (
+            <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+                <Reveal className="grid lg:grid-cols-12 gap-12 items-center">
+                    <div className="lg:col-span-7">
+                        <Tag className="mb-6 text-innato-red border-innato-red/20">Historia Destacada</Tag>
+                        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl leading-[0.9] font-light mb-8 tracking-tight">
+                            La verdad es <span className="italic">innata.</span> <br/>
+                            <span className="text-white/40">Y la claridad es poder.</span>
+                        </h1>
+                        <p className="max-w-xl text-lg text-white/60 font-light leading-relaxed mb-10">
+                            No competimos por la primicia, competimos por la interpretación. Una plataforma para entender el Ecuador real, sin la propaganda que ensucia el debate público.
+                        </p>
+                        <div className="flex flex-wrap gap-4">
+                            <button className="bg-white text-black px-8 py-4 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-innato-red hover:text-white transition-all flex items-center gap-3">
+                                <Icon name="play" size={14} /> Ver Última Entrevista
+                            </button>
+                            <button className="border border-white/20 text-white px-8 py-4 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
+                                Leer Análisis Semanal
+                            </button>
+                        </div>
+                    </div>
+                    <div className="lg:col-span-5">
+                        <div className="relative group cursor-pointer">
+                            <div className="absolute -inset-4 bg-innato-red/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <img src="assets_stable/nico-main.jpg" className="w-full aspect-[4/5] object-cover border border-white/10 grayscale hover:grayscale-0 transition-all duration-700" alt="Nico Armendáriz" />
+                            <div className="absolute bottom-6 left-6 right-6 p-6 bg-black/60 backdrop-blur-md border border-white/10">
+                                <div className="text-[10px] font-mono text-innato-red mb-2 tracking-[0.3em] uppercase">Portada</div>
+                                <h3 className="font-display text-2xl mb-2 italic">"El sistema político está diseñado para el ruido, nosotros para la señal."</h3>
+                                <div className="text-[10px] font-mono text-white/40 uppercase">Nico Armendáriz — Director</div>
+                            </div>
+                        </div>
+                    </div>
+                </Reveal>
+            </section>
+        );
+
+        const LatestFeed = () => (
+            <section className="py-20 px-6 border-y border-white/5 bg-white/[0.01]">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex justify-between items-end mb-12">
+                        <div>
+                            <Tag className="mb-4">Flujo Constante</Tag>
+                            <h2 className="font-display text-4xl md:text-5xl">Lo último en INNATO</h2>
+                        </div>
+                        <button className="hidden md:flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                            Ver todo el feed <Icon name="arrow-right" size={12} />
+                        </button>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[
+                            { type: 'TikTok', title: '¿Por qué fallan las encuestas? Análisis estructural.', date: 'Hoy', platform: 'tiktok', img: 'assets_stable/social/feed-1.jpg' },
+                            { type: 'YouTube', title: 'Entrevista: El futuro de la fiscalización en Ecuador', date: 'Ayer', platform: 'youtube', img: 'assets_stable/social/feed-2.jpg' },
+                            { type: 'Blog', title: 'La trampa narrativa: desenmascarando el ruido', date: 'hace 2 días', platform: 'eye', img: 'assets_stable/social/feed-3.jpg' },
+                            { type: 'Instagram', title: 'Contexto: Qué pasa realmente en la Asamblea', date: 'hace 3 días', platform: 'instagram', img: 'assets_stable/nico-main.jpg' }
+                        ].map((post, i) => (
+                            <div key={i} className="group p-6 border border-white/5 bg-white/5 hover-lift overflow-hidden">
+                                <div className="relative mb-6 -mx-6 -mt-6 aspect-video overflow-hidden">
+                                    <img src={post.img} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500" alt="" />
+                                    <div className="absolute top-4 left-4 p-2 bg-black/60 backdrop-blur-md rounded text-white/60">
+                                        <Icon name={post.platform} size={14} />
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center mb-4">
+                                    <Tag className="bg-transparent border-none p-0 text-white/30">{post.type}</Tag>
+                                    <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">{post.date}</span>
+                                </div>
+                                <h3 className="font-display text-xl mb-6 group-hover:italic transition-all leading-snug">{post.title}</h3>
+                                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-white/20 group-hover:text-white transition-colors">
+                                    Ver contenido <Icon name="arrow-right" size={12} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+
+        const SocialIndex = () => (
+            <section className="py-24 px-6 max-w-7xl mx-auto">
+                <Reveal className="text-center mb-16">
+                    <h2 className="font-display text-4xl md:text-6xl mb-6 italic">La conversación también vive en redes</h2>
+                    <p className="text-white/40 max-w-xl mx-auto font-light">Encontramos a nuestra audiencia donde ya está. Síguenos para el análisis diario en formato corto.</p>
+                </Reveal>
+
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+                    {[
+                        { name: 'TikTok', followers: '14K', detail: '224K likes', icon: 'tiktok', color: 'hover:border-white/40', link: 'https://tiktok.com/@innatoec' },
+                        { name: 'Instagram', followers: '5K', detail: 'Seguidores', icon: 'instagram', color: 'hover:border-pink-500/40', link: 'https://instagram.com/innatoec' },
+                        { name: 'Facebook', followers: '95K', detail: 'Seguidores', icon: 'facebook', color: 'hover:border-blue-600/40', link: 'https://facebook.com/Innatoec' },
+                        { name: 'YouTube', followers: 'Canal', detail: 'Suscripciones', icon: 'youtube', color: 'hover:border-red-600/40', link: '#' }
+                    ].map((p, i) => (
+                        <a href={p.link} target="_blank" rel="noopener noreferrer" key={i} className={`p-8 border border-white/10 text-center transition-all duration-500 cursor-pointer block group ${p.color}`}>
+                            <div className="flex justify-center mb-6">
+                                <Icon name={p.icon} size={32} className="text-white/20 group-hover:text-white transition-colors" />
+                            </div>
+                            <div className="text-2xl font-display mb-1">{p.followers}</div>
+                            <div className="text-[10px] font-mono text-white/40 uppercase tracking-widest group-hover:text-white transition-colors">{p.detail}</div>
+                            <div className="mt-4 text-[9px] font-mono text-innato-red opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">Seguir @innatoec</div>
+                        </a>
+                    ))}
+                </div>
+            </section>
+        );
+
+        const FeaturedInterviews = () => (
+            <section className="py-24 px-6 bg-black border-y border-white/5">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+                        <div>
+                            <Tag className="mb-4 text-innato-red border-innato-red/20">Programación Original</Tag>
+                            <h2 className="font-display text-4xl md:text-6xl">Entrevistas que importan</h2>
+                        </div>
+                        <p className="text-white/40 max-w-sm font-light text-sm">Conversaciones frontales con los actores que definen el rumbo del país. Sin filtros, sin guiones predecibles.</p>
+                    </div>
+
+                    <div className="grid lg:grid-cols-3 gap-8">
+                        {/* Main Interview Card */}
+                        <div className="lg:col-span-2 group cursor-pointer">
+                            <div className="relative overflow-hidden border border-white/10">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
+                                <div className="absolute top-6 left-6 z-20">
+                                    <Tag className="bg-innato-red text-white border-none">En Portada</Tag>
+                                </div>
+                                <img src="assets_stable/social/feed-1.jpg" className="w-full aspect-video object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" alt="Entrevista" />
+                                <div className="absolute bottom-8 left-8 right-8 z-20">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="w-12 h-12 flex items-center justify-center bg-white text-black rounded-full group-hover:bg-innato-red group-hover:text-white transition-all">
+                                            <Icon name="play" size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] font-mono text-white/60 uppercase tracking-widest">Duración: 42:15</div>
+                                            <h3 className="font-display text-3xl md:text-4xl italic">Nico Armendáriz x Fiscal General</h3>
+                                        </div>
+                                    </div>
+                                    <p className="text-white/60 text-sm font-light max-w-lg">Una conversación sobre la crisis institucional, el modelo de seguridad y lo que nadie se atreve a preguntar en televisión abierta.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sidebar Interviews */}
+                        <div className="space-y-6">
+                            {[
+                                { title: 'Análisis: El Futuro de la Energía', guest: 'Eco. Alberto Acosta', img: 'assets_stable/social/feed-2.jpg' },
+                                { title: 'Conversando con el Ciudadano', guest: 'Nico Armendáriz', img: 'assets_stable/nico-main.jpg' },
+                                { title: 'La Realidad de las Calles', guest: 'Reportaje Especial', img: 'assets_stable/social/feed-3.jpg' }
+                            ].map((item, i) => (
+                                <div key={i} className="flex gap-4 p-4 border border-white/5 hover:bg-white/5 transition-colors cursor-pointer group">
+                                    <div className="w-24 h-24 flex-shrink-0 bg-white/5 border border-white/10 overflow-hidden relative">
+                                        <img src={item.img} className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                                            <Icon name="play" size={14} className="text-white" />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col justify-center">
+                                        <div className="text-[9px] font-mono text-innato-red mb-1 uppercase tracking-widest">Entrevista</div>
+                                        <h4 className="font-display text-sm leading-tight mb-2">{item.title}</h4>
+                                        <div className="text-[9px] font-mono text-white/30 uppercase">Invitado: {item.guest}</div>
+                                    </div>
+                                </div>
+                            ))}
+                            <button className="w-full py-4 border border-white/10 font-mono text-[10px] uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                                Ver todas las entrevistas
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+
+        const EditorialBlog = () => (
+            <section className="py-24 px-6 max-w-7xl mx-auto">
+                <div className="grid lg:grid-cols-4 gap-12">
+                    <div className="lg:col-span-1">
+                        <Tag className="mb-6">Categorías</Tag>
+                        <h2 className="font-display text-4xl mb-8">El Blog Editorial</h2>
+                        <ul className="space-y-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
+                            {['Actualidad Interpretada', 'La trampa narrativa', 'Ecuador en contexto', 'Opinión', 'Entrevistas'].map((cat, i) => (
+                                <li key={i} className="hover:text-innato-red cursor-pointer transition-colors flex items-center gap-2">
+                                    <span className="w-1 h-1 bg-white/20 rounded-full"></span>
+                                    {cat}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className="lg:col-span-3 grid md:grid-cols-2 gap-8">
+                        {[
+                            { title: '¿Por qué el precio de la energía no baja?', desc: 'Un análisis técnico y político sobre la matriz energética y los intereses en juego.' },
+                            { title: 'La nueva ley económica: ¿Quién gana realmente?', desc: 'Desglosamos el texto legal para entender el impacto en el bolsillo ciudadano.' },
+                            { title: 'Geopolítica: Ecuador dentro del mapa regional', desc: 'Cómo nos afectan los cambios de gobierno en los países vecinos.' },
+                            { title: 'El arte de la manipulación digital', desc: 'Cómo se construyen las tendencias falsas para desviar la atención pública.' }
+                        ].map((post, i) => (
+                            <div key={i} className="pb-8 border-b border-white/10 group cursor-pointer">
+                                <div className="flex justify-between items-center mb-6">
+                                    <Tag className="text-white/40 border-white/5 bg-transparent p-0">Actualidad</Tag>
+                                    <span className="text-[9px] font-mono text-white/20">Lectura: 6 min</span>
+                                </div>
+                                <h3 className="font-display text-2xl mb-4 group-hover:text-innato-red transition-colors">{post.title}</h3>
+                                <p className="text-white/40 text-sm font-light leading-relaxed mb-6">
+                                    {post.desc}
+                                </p>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 overflow-hidden">
+                                            <img src="assets_stable/nico-main.jpg" className="w-full h-full object-cover" />
+                                        </div>
+                                        <span className="text-[10px] font-mono text-white/60 uppercase">Nico Armendáriz</span>
+                                    </div>
+                                    <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Mayo 08, 2026</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+
+        const ProgramsGrid = () => (
+            <section className="py-24 px-6 bg-white/[0.02] border-y border-white/5">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <Tag className="mb-4">Formatos de Autor</Tag>
+                        <h2 className="font-display text-5xl md:text-6xl italic mb-6">Nuestros Programas</h2>
+                        <p className="text-white/40 max-w-xl mx-auto font-light">Estructuras de contenido diseñadas para elevar el nivel del debate público.</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[
+                            { name: 'Actualidad Interpretada', desc: 'Qué pasó, por qué importa y qué es lo que todos están pasando por alto.' },
+                            { name: 'El Programa Ciudadano', desc: 'Conversaciones humanas y políticas lideradas por Nico Armendáriz.' },
+                            { name: 'La Trampa Narrativa', desc: 'Análisis profundo de propaganda, manipulación y encuadres políticos.' },
+                            { name: 'Ecuador en Contexto', desc: 'La política nacional analizada desde una perspectiva latinoamericana.' },
+                            { name: 'Lo que nadie está viendo', desc: 'Señales débiles y patrones que explican los movimientos del poder.' },
+                            { name: '4RADAR Allied Layer', desc: 'Inteligencia narrativa y detección de tendencias anticipadas (Próximamente).', accent: true }
+                        ].map((prog, i) => (
+                            <div key={i} className={`p-10 border ${prog.accent ? 'border-innato-red/30 bg-innato-red/5' : 'border-white/5 bg-white/5'} hover:border-white/20 transition-all group cursor-pointer`}>
+                                <div className="text-2xl font-display mb-4 italic group-hover:text-innato-red transition-colors">{prog.name}</div>
+                                <p className="text-sm font-light text-white/40 leading-relaxed">{prog.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+
+        const Newsletter = () => (
+            <section className="py-24 px-6 bg-black relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-innato-red to-transparent opacity-30"></div>
+                <div className="max-w-3xl mx-auto text-center relative z-10">
+                    <h2 className="font-display text-5xl md:text-7xl mb-8">Recibe criterio, <br/><span className="italic text-innato-red">no ruido.</span></h2>
+                    <p className="text-white/60 mb-12 font-light">
+                        Únete a miles de ecuatorianos que reciben semanalmente nuestro análisis editorial directamente en su bandeja de entrada. Sin spam, solo contexto.
+                    </p>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <input 
+                            type="email" 
+                            placeholder="Tu correo electrónico" 
+                            className="flex-1 bg-white/5 border border-white/10 px-6 py-4 font-mono text-xs focus:outline-none focus:border-innato-red transition-colors text-white"
+                        />
+                        <button className="bg-innato-red text-white px-10 py-4 font-mono text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                            Suscribirme
+                        </button>
+                    </div>
+                    <p className="mt-6 text-[10px] font-mono text-white/20 uppercase tracking-widest">Privacidad garantizada. Tu información es solo nuestra.</p>
+                </div>
+            </section>
+        );
+
+        const Manifesto = () => (
+            <section className="py-32 px-6 border-y border-white/5">
+                <div className="max-w-4xl mx-auto text-center">
+                    <h2 className="font-mono text-[10px] uppercase tracking-[0.5em] text-innato-red mb-16 italic">Nuestro Manifiesto</h2>
+                    <p className="font-display text-3xl md:text-5xl lg:text-6xl leading-tight font-light mb-16">
+                        "INNATO no compite por velocidad ni por tribus ideológicas. Competimos por <span className="italic border-b border-innato-red/30 pb-2">claridad</span>. El enemigo no es un partido político; es la propaganda disfrazada de información."
+                    </p>
+                    <div className="flex justify-center">
+                         <img src="assets_stable/logo.jpg" alt="" className="h-10 opacity-20 grayscale" />
+                    </div>
+                </div>
+            </section>
+        );
+
+        const Footer = () => (
+            <footer className="py-24 px-6 border-t border-white/5 bg-black">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+                        <div className="lg:col-span-2">
+                             <img src="assets_stable/logo.jpg" alt="INNATO" className="h-10 mb-8" />
+                             <p className="text-white/40 max-w-sm font-light leading-relaxed text-sm">
+                                Medio digital ecuatoriano independiente operando en la intersección de la comunicación y el análisis político para una ciudadanía informada.
+                             </p>
+                        </div>
+                        <div>
+                            <h4 className="font-mono text-white text-[10px] uppercase tracking-[0.4em] mb-8">Navegación</h4>
+                            <ul className="space-y-4 text-xs text-white/40 font-mono uppercase tracking-widest">
+                                <li><a href="#" className="hover:text-innato-red transition-colors">Videos</a></li>
+                                <li><a href="#" className="hover:text-innato-red transition-colors">Entrevistas</a></li>
+                                <li><a href="#" className="hover:text-innato-red transition-colors">Blog Editorial</a></li>
+                                <li><a href="#" className="hover:text-innato-red transition-colors">Programas</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-mono text-white text-[10px] uppercase tracking-[0.4em] mb-8">Contacto</h4>
+                            <ul className="space-y-4 text-xs text-white/40 font-mono uppercase tracking-widest">
+                                <li><a href="#" className="hover:text-innato-red transition-colors">Publicidad</a></li>
+                                <li><a href="#" className="hover:text-innato-red transition-colors">Entrevistas</a></li>
+                                <li><a href="#" className="hover:text-innato-red transition-colors">Alianzas</a></li>
+                                <li><a href="#" className="hover:text-innato-red transition-colors">Colaborar</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="text-[10px] font-mono text-white/20 uppercase tracking-[0.2em]">© 2026 INNATO | MEDIO DIGITAL INDEPENDIENTE.</div>
+                        <div className="flex gap-8 text-[10px] font-mono text-white/30 uppercase tracking-widest">
+                            <a href="https://tiktok.com/@innatoec" target="_blank" className="hover:text-white">TikTok</a>
+                            <a href="#" className="hover:text-white">YouTube</a>
+                            <a href="https://instagram.com/innatoec" target="_blank" className="hover:text-white">Instagram</a>
+                            <a href="https://facebook.com/Innatoec" target="_blank" className="hover:text-white">Facebook</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        );
+
+        // --- VIEWS ---
+
+        const HomeView = ({ setView }) => (
+            <>
+                <HomeHero />
+                <LatestFeed />
+                <SocialIndex />
+                <FeaturedInterviews />
+                <EditorialBlog />
+                <ProgramsGrid />
+                <Newsletter />
+                <Manifesto />
+            </>
+        );
+
+        const GenericView = ({ title, desc }) => (
+            <div className="pt-40 pb-32 px-6 max-w-7xl mx-auto min-h-screen">
+                <Tag className="mb-6">Vista en Desarrollo</Tag>
+                <h1 className="font-display text-6xl md:text-8xl mb-8 italic">{title}</h1>
+                <p className="text-white/40 max-w-2xl text-xl font-light mb-16">{desc}</p>
+                <div className="grid md:grid-cols-3 gap-8 opacity-20 grayscale pointer-events-none">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
+                        <div key={i} className="h-64 border border-white/10 bg-white/5"></div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // --- APP ---
+
+        const App = () => {
+            const [view, setView] = useState('home');
+
+            useEffect(() => {
+                window.scrollTo(0, 0);
+            }, [view]);
+
+            return (
+                <div className="selection:bg-innato-red selection:text-white">
+                    <Nav activeView={view} setView={setView} />
+                    
+                    {view === 'home' && <HomeView setView={setView} />}
+                    {view === 'videos' && <GenericView title="Videos" desc="Nuestra videoteca completa. Análisis en formato vertical y horizontal para todas las plataformas." />}
+                    {view === 'entrevistas' && <GenericView title="Entrevistas" desc="Conversaciones frontales con los protagonistas de la política ecuatoriana." />}
+                    {view === 'blog' && <GenericView title="Blog Editorial" desc="Análisis profundo y criterio sobre los temas que definen la agenda nacional." />}
+                    {view === 'programas' && <GenericView title="Programas" desc="Nuestros formatos originales diseñados para la claridad ciudadana." />}
+                    {view === 'nosotros' && <GenericView title="Nosotros" desc="Conoce al equipo y la visión detrás de la plataforma INNATO." />}
+
+                    <Footer />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
