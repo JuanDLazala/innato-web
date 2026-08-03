@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INNATO | Medio Digital Ecuatoriano</title>
+    <title>INNATOec | Medio Digital Ecuatoriano</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -17,7 +17,8 @@
                     },
                     colors: {
                         innato: {
-                            red: '#E11D48',
+                            lime: '#BFEE00',
+                            alert: '#E11D48',
                             dark: '#0A0A0B',
                             surface: '#121214',
                             border: '#1F1F23',
@@ -43,7 +44,8 @@
             --fg: oklch(98% 0.005 260);
             --muted: oklch(65% 0.01 260);
             --border: oklch(25% 0.02 260);
-            --accent: oklch(55% 0.22 25);
+            --accent: #BFEE00;          /* lima: la marca */
+            --alert: #E11D48;           /* rojo: solo urgencia */
         }
 
         body {
@@ -188,7 +190,7 @@
                 <nav className={`fixed top-0 w-full z-[1000] transition-all duration-500 ${scrolled || mobileMenu ? 'bg-black/90 backdrop-blur-xl py-3 border-b border-white/10' : 'py-6'}`}>
                     <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
                         <div className="flex items-center gap-2 cursor-pointer" onClick={() => go('inicio')}>
-                            <img src="assets_stable/logo.jpg" alt="INNATO" className="h-8 md:h-10" />
+                            <img src="assets_stable/logotipo-ec.svg" alt="INNATOec" className="h-8 md:h-10" />
                         </div>
 
                         {/* Desktop Links */}
@@ -205,8 +207,8 @@
                         </div>
 
                         <div className="flex items-center gap-6">
-                            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="hidden md:flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-innato-red border border-innato-red/30 px-4 py-2 hover:bg-innato-red hover:text-white transition-all">
-                                <span className="w-1.5 h-1.5 rounded-full bg-innato-red animate-pulse"></span>
+                            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="hidden md:flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-innato-lime border border-innato-lime/30 px-4 py-2 hover:bg-innato-lime hover:text-white transition-all">
+                                <span className="w-1.5 h-1.5 rounded-full bg-innato-lime animate-pulse"></span>
                                 En Vivo
                             </a>
                             <button className="lg:hidden text-white" onClick={() => setMobileMenu(!mobileMenu)}>
@@ -222,13 +224,13 @@
                                 <button
                                     key={link.id}
                                     onClick={() => go(link.id)}
-                                    className={`text-xl font-display italic ${active === link.id ? 'text-innato-red' : 'text-white'}`}
+                                    className={`text-xl font-display italic ${active === link.id ? 'text-innato-lime' : 'text-white'}`}
                                 >
                                     {link.label}
                                 </button>
                             ))}
-                            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-widest text-innato-red mt-4">
-                                <span className="w-2 h-2 rounded-full bg-innato-red animate-pulse"></span>
+                            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-widest text-innato-lime mt-4">
+                                <span className="w-2 h-2 rounded-full bg-innato-lime animate-pulse"></span>
                                 Señal en vivo
                             </a>
                         </div>
@@ -261,7 +263,7 @@
             <section id="inicio" className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
                 <Reveal className="grid lg:grid-cols-12 gap-12 items-center">
                     <div className="lg:col-span-7">
-                        <Tag className="mb-6 text-innato-red border-innato-red/20">Historia Destacada</Tag>
+                        <Tag className="mb-6 text-innato-lime border-innato-lime/20">Historia Destacada</Tag>
                         <h1 className="font-display text-5xl md:text-7xl lg:text-8xl leading-[0.9] font-light mb-8 tracking-tight">
                             La verdad es <span className="italic">innata.</span> <br/>
                             <span className="text-white/40">Y la claridad es poder.</span>
@@ -270,7 +272,7 @@
                             No competimos por la primicia, competimos por la interpretación. Una plataforma para entender el Ecuador real, sin la propaganda que ensucia el debate público.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <button onClick={() => scrollToId('ultimo')} className="bg-white text-black px-8 py-4 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-innato-red hover:text-white transition-all flex items-center gap-3">
+                            <button onClick={() => scrollToId('ultimo')} className="bg-white text-black px-8 py-4 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-innato-lime hover:text-black transition-all flex items-center gap-3">
                                 <Icon name="play" size={14} /> Ver lo último
                             </button>
                             <button onClick={() => scrollToId('blog')} className="border border-white/20 text-white px-8 py-4 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
@@ -280,10 +282,10 @@
                     </div>
                     <div className="lg:col-span-5">
                         <div className="relative group cursor-pointer">
-                            <div className="absolute -inset-4 bg-innato-red/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="absolute -inset-4 bg-innato-lime/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <img src="assets_stable/innato-hero.jpg" className="w-full aspect-[4/5] object-cover border border-white/10 transition-all duration-700" alt="INNATO" />
                             <div className="absolute bottom-6 left-6 right-6 p-6 bg-black/60 backdrop-blur-md border border-white/10">
-                                <div className="text-[10px] font-mono text-innato-red mb-2 tracking-[0.3em] uppercase">Portada</div>
+                                <div className="text-[10px] font-mono text-innato-lime mb-2 tracking-[0.3em] uppercase">Portada</div>
                                 <h3 className="font-display text-2xl mb-2 italic">"El sistema político está diseñado para el ruido, nosotros para la señal."</h3>
                                 <div className="text-[10px] font-mono text-white/40 uppercase">Nico Armendáriz — Director</div>
                             </div>
@@ -415,7 +417,7 @@
                             </div>
                             <div className="text-2xl font-display mb-1">{p.followers}</div>
                             <div className="text-[10px] font-mono text-white/40 uppercase tracking-widest group-hover:text-white transition-colors">{p.detail}</div>
-                            <div className="mt-4 text-[9px] font-mono text-innato-red opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">Seguir @innatoec</div>
+                            <div className="mt-4 text-[9px] font-mono text-innato-lime opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">Seguir @innatoec</div>
                         </a>
                     ))}
                 </div>
@@ -472,7 +474,7 @@
                                                 <Tag className="text-white/40 border-white/5 bg-transparent p-0">{post.category || 'Análisis'}</Tag>
                                                 {post.readingTime && <span className="text-[9px] font-mono text-white/20">Lectura: {post.readingTime}</span>}
                                             </div>
-                                            <h3 className="font-display text-2xl mb-4 group-hover:text-innato-red transition-colors">{post.title}</h3>
+                                            <h3 className="font-display text-2xl mb-4 group-hover:text-innato-lime transition-colors">{post.title}</h3>
                                             <p className="text-white/40 text-sm font-light leading-relaxed mb-6">{post.excerpt}</p>
                                             <div className="flex items-center justify-between mb-6">
                                                 <div className="flex items-center gap-2">
@@ -487,7 +489,7 @@
                                                 <React.Fragment>
                                                     <button
                                                         onClick={() => setOpen(open === i ? null : i)}
-                                                        className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-white/40 hover:text-innato-red transition-colors"
+                                                        className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-white/40 hover:text-innato-lime transition-colors"
                                                     >
                                                         {open === i ? 'Cerrar' : 'Leer completo'} <Icon name="arrow-right" size={12} />
                                                     </button>
@@ -520,11 +522,11 @@
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[
-                            { name: 'INNATO Ecuador', flag: '🇪🇨', icon: 'globe', desc: 'Política nacional, proceso electoral y poder local: Quito, Pichincha y la agenda del país.', link: 'https://www.tiktok.com/tag/ecuador' },
-                            { name: 'INNATO Colombia', flag: '🇨🇴', icon: 'globe', desc: 'Congreso, partidos y coyuntura colombiana leída desde la región.', link: 'https://www.tiktok.com/tag/colombia' },
-                            { name: 'INNATO Perú', flag: '🇵🇪', icon: 'globe', desc: 'La política peruana y su efecto sobre el equilibrio andino.', link: 'https://www.tiktok.com/tag/peru' },
+                            { name: 'INNATOec', flag: '🇪🇨', icon: 'globe', desc: 'Política nacional, proceso electoral y poder local: Quito, Pichincha y la agenda del país.', link: 'https://www.tiktok.com/tag/ecuador' },
+                            { name: 'INNATOco', flag: '🇨🇴', icon: 'globe', desc: 'Congreso, partidos y coyuntura colombiana leída desde la región.', link: 'https://www.tiktok.com/tag/colombia' },
+                            { name: 'INNATOpe', flag: '🇵🇪', icon: 'globe', desc: 'La política peruana y su efecto sobre el equilibrio andino.', link: 'https://www.tiktok.com/tag/peru' },
                             { name: 'Entrevistas', icon: 'mic', desc: 'Conversaciones directas con candidatos, asambleístas, funcionarios y periodistas de investigación.', link: 'https://www.facebook.com/Innatoec' },
-                            { name: '#URGENTE', icon: 'alert', desc: 'Hechos en desarrollo. Lo que hay que saber mientras todavía está pasando.', link: 'https://www.instagram.com/explore/tags/urgente/', accent: true },
+                            { name: '#URGENTE', icon: 'alert', desc: 'Hechos en desarrollo. Lo que hay que saber mientras todavía está pasando.', link: 'https://www.instagram.com/explore/tags/urgente/', alerta: true },
                             { name: 'En Vivo', icon: 'live', desc: 'Transmisiones y highlights de El Programa Ciudadano.', link: YOUTUBE_URL }
                         ].map((item, i) => (
                             <a
@@ -532,11 +534,11 @@
                                 href={item.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`block p-10 border ${item.accent ? 'border-innato-red/30 bg-innato-red/5' : 'border-white/5 bg-white/5'} hover:border-white/20 hover-lift transition-all group`}
+                                className={`block p-10 border ${item.alerta ? 'border-innato-alert/30 bg-innato-alert/5' : 'border-white/5 bg-white/5'} hover:border-white/20 hover-lift transition-all group`}
                             >
                                 <div className="flex items-center gap-3 mb-4">
-                                    <Icon name={item.icon} size={18} className="text-white/25 group-hover:text-innato-red transition-colors" />
-                                    <span className="text-2xl font-display italic group-hover:text-innato-red transition-colors">{item.name}</span>
+                                    <Icon name={item.icon} size={18} className="text-white/25 group-hover:text-innato-lime transition-colors" />
+                                    <span className="text-2xl font-display italic group-hover:text-innato-lime transition-colors">{item.name}</span>
                                     {item.flag && <span className="text-lg">{item.flag}</span>}
                                 </div>
                                 <p className="text-sm font-light text-white/40 leading-relaxed mb-6">{item.desc}</p>
@@ -570,15 +572,15 @@
 
             return (
             <section className="py-24 px-6 bg-black relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-innato-red to-transparent opacity-30"></div>
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-innato-lime to-transparent opacity-30"></div>
                 <div className="max-w-3xl mx-auto text-center relative z-10">
-                    <h2 className="font-display text-5xl md:text-7xl mb-8">Recibe criterio, <br/><span className="italic text-innato-red">no ruido.</span></h2>
+                    <h2 className="font-display text-5xl md:text-7xl mb-8">Recibe criterio, <br/><span className="italic text-innato-lime">no ruido.</span></h2>
                     <p className="text-white/60 mb-12 font-light">
                         Déjanos tu correo y recibirás nuestro análisis editorial cuando lo publiquemos. Sin spam, solo contexto.
                     </p>
 
                     {sent ? (
-                        <div className="border border-innato-red/30 bg-innato-red/5 px-8 py-10">
+                        <div className="border border-innato-lime/30 bg-innato-lime/5 px-8 py-10">
                             <div className="font-display text-3xl italic mb-3">Listo, quedaste dentro.</div>
                             <p className="text-white/50 text-sm font-light">Te escribiremos a <span className="text-white/80">{email}</span> cuando salga el próximo análisis.</p>
                         </div>
@@ -602,14 +604,14 @@
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Tu correo electrónico"
-                                    className="flex-1 bg-white/5 border border-white/10 px-6 py-4 font-mono text-xs focus:outline-none focus:border-innato-red transition-colors text-white"
+                                    className="flex-1 bg-white/5 border border-white/10 px-6 py-4 font-mono text-xs focus:outline-none focus:border-innato-lime transition-colors text-white"
                                 />
-                                <button type="submit" disabled={status === 'sending'} className="bg-innato-red text-white px-10 py-4 font-mono text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all disabled:opacity-40">
+                                <button type="submit" disabled={status === 'sending'} className="bg-innato-lime text-black px-10 py-4 font-mono text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all disabled:opacity-40">
                                     {status === 'sending' ? 'Enviando…' : 'Suscribirme'}
                                 </button>
                             </div>
                             {status === 'error' && (
-                                <p className="mt-4 text-[10px] font-mono text-innato-red uppercase tracking-widest">No se pudo enviar. Intentalo de nuevo.</p>
+                                <p className="mt-4 text-[10px] font-mono text-innato-lime uppercase tracking-widest">No se pudo enviar. Intentalo de nuevo.</p>
                             )}
                         </form>
                     )}
@@ -622,12 +624,12 @@
         const Manifesto = () => (
             <section id="manifiesto" className="py-32 px-6 border-y border-white/5">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="font-mono text-[10px] uppercase tracking-[0.5em] text-innato-red mb-16 italic">Nuestro Manifiesto</h2>
+                    <h2 className="font-mono text-[10px] uppercase tracking-[0.5em] text-innato-lime mb-16 italic">Nuestro Manifiesto</h2>
                     <p className="font-display text-3xl md:text-5xl lg:text-6xl leading-tight font-light mb-16">
-                        "INNATO no compite por velocidad ni por tribus ideológicas. Competimos por <span className="italic border-b border-innato-red/30 pb-2">claridad</span>. El enemigo no es un partido político; es la propaganda disfrazada de información."
+                        "INNATOec no compite por velocidad ni por tribus ideológicas. Competimos por <span className="italic border-b border-innato-lime/30 pb-2">claridad</span>. El enemigo no es un partido político; es la propaganda disfrazada de información."
                     </p>
                     <div className="flex justify-center">
-                         <img src="assets_stable/logo.jpg" alt="" className="h-10 opacity-20 grayscale" />
+                         <img src="assets_stable/isotipo.svg" alt="" className="h-12 opacity-25" />
                     </div>
                 </div>
             </section>
@@ -638,7 +640,7 @@
                 <div className="max-w-7xl mx-auto">
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
                         <div className="lg:col-span-2">
-                             <img src="assets_stable/logo.jpg" alt="INNATO" className="h-10 mb-8" />
+                             <img src="assets_stable/logotipo-ec.svg" alt="INNATOec" className="h-10 mb-8" />
                              <p className="text-white/40 max-w-sm font-light leading-relaxed text-sm">
                                 Medio digital ecuatoriano independiente operando en la intersección de la comunicación y el análisis político para una ciudadanía informada.
                              </p>
@@ -646,23 +648,23 @@
                         <div>
                             <h4 className="font-mono text-white text-[10px] uppercase tracking-[0.4em] mb-8">Navegación</h4>
                             <ul className="space-y-4 text-xs text-white/40 font-mono uppercase tracking-widest">
-                                <li><button onClick={() => scrollToId('ultimo')} className="hover:text-innato-red transition-colors uppercase">Lo último</button></li>
-                                <li><button onClick={() => scrollToId('cobertura')} className="hover:text-innato-red transition-colors uppercase">Cobertura</button></li>
-                                <li><button onClick={() => scrollToId('blog')} className="hover:text-innato-red transition-colors uppercase">Blog Editorial</button></li>
-                                <li><button onClick={() => scrollToId('manifiesto')} className="hover:text-innato-red transition-colors uppercase">Manifiesto</button></li>
+                                <li><button onClick={() => scrollToId('ultimo')} className="hover:text-innato-lime transition-colors uppercase">Lo último</button></li>
+                                <li><button onClick={() => scrollToId('cobertura')} className="hover:text-innato-lime transition-colors uppercase">Cobertura</button></li>
+                                <li><button onClick={() => scrollToId('blog')} className="hover:text-innato-lime transition-colors uppercase">Blog Editorial</button></li>
+                                <li><button onClick={() => scrollToId('manifiesto')} className="hover:text-innato-lime transition-colors uppercase">Manifiesto</button></li>
                             </ul>
                         </div>
                         <div>
                             <h4 className="font-mono text-white text-[10px] uppercase tracking-[0.4em] mb-8">Contacto</h4>
                             <ul className="space-y-4 text-xs text-white/40 font-mono uppercase tracking-widest">
-                                <li><a href="https://wa.me/593997862120" target="_blank" rel="noopener noreferrer" className="hover:text-innato-red transition-colors">WhatsApp</a></li>
-                                <li><a href="https://www.facebook.com/Innatoec" target="_blank" rel="noopener noreferrer" className="hover:text-innato-red transition-colors">Messenger</a></li>
-                                <li><a href="https://www.instagram.com/innatoec/" target="_blank" rel="noopener noreferrer" className="hover:text-innato-red transition-colors">Instagram DM</a></li>
+                                <li><a href="https://wa.me/593997862120" target="_blank" rel="noopener noreferrer" className="hover:text-innato-lime transition-colors">WhatsApp</a></li>
+                                <li><a href="https://www.facebook.com/Innatoec" target="_blank" rel="noopener noreferrer" className="hover:text-innato-lime transition-colors">Messenger</a></li>
+                                <li><a href="https://www.instagram.com/innatoec/" target="_blank" rel="noopener noreferrer" className="hover:text-innato-lime transition-colors">Instagram DM</a></li>
                             </ul>
                         </div>
                     </div>
                     <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-                        <div className="text-[10px] font-mono text-white/20 uppercase tracking-[0.2em]">© 2026 INNATO | MEDIO DIGITAL INDEPENDIENTE.</div>
+                        <div className="text-[10px] font-mono text-white/20 uppercase tracking-[0.2em]">© 2026 INNATOec | MEDIO DIGITAL INDEPENDIENTE.</div>
                         <div className="flex gap-8 text-[10px] font-mono text-white/30 uppercase tracking-widest">
                             <a href="https://tiktok.com/@innatoec" target="_blank" rel="noopener noreferrer" className="hover:text-white">TikTok</a>
                             <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white">YouTube</a>
@@ -677,7 +679,7 @@
         // --- APP ---
 
         const App = () => (
-            <div className="selection:bg-innato-red selection:text-white">
+            <div className="selection:bg-innato-lime selection:text-white">
                 <Nav />
                 <HomeHero />
                 <LatestFeed />
