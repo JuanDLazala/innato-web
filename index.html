@@ -111,6 +111,13 @@
 </head>
 <body>
     <div class="grain"></div>
+
+    <!-- Formulario estatico: Netlify lo detecta al desplegar. El formulario visible lo renderiza React. -->
+    <form name="newsletter" netlify netlify-honeypot="bot-field" hidden>
+        <input type="email" name="email" />
+        <input name="bot-field" />
+    </form>
+
     <div id="root"></div>
 
     <script type="text/babel">
@@ -130,44 +137,67 @@
                 {name === 'tiktok' && <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />}
                 {name === 'facebook' && <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />}
                 {name === 'mail' && <React.Fragment><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></React.Fragment>}
+                {name === 'globe' && <React.Fragment><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></React.Fragment>}
+                {name === 'alert' && <React.Fragment><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></React.Fragment>}
+                {name === 'mic' && <React.Fragment><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /></React.Fragment>}
+                {name === 'live' && <React.Fragment><circle cx="12" cy="12" r="3" fill="currentColor" /><path d="M7.76 16.24a6 6 0 0 1 0-8.49M16.24 7.76a6 6 0 0 1 0 8.49M4.93 19.07a10 10 0 0 1 0-14.14M19.07 4.93a10 10 0 0 1 0 14.14" /></React.Fragment>}
                 {name === 'menu' && <React.Fragment><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></React.Fragment>}
                 {name === 'x' && <React.Fragment><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></React.Fragment>}
             </svg>
         );
 
-        const Nav = ({ activeView, setView }) => {
+        const YOUTUBE_URL = 'https://www.youtube.com/@InnatoecOF';
+
+        const scrollToId = (id) => {
+            const el = document.getElementById(id);
+            if (el) window.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+        };
+
+        const Nav = () => {
             const [scrolled, setScrolled] = useState(false);
             const [mobileMenu, setMobileMenu] = useState(false);
+            const [active, setActive] = useState('inicio');
+
+            const navLinks = [
+                { id: 'inicio', label: 'Inicio' },
+                { id: 'ultimo', label: 'Lo último' },
+                { id: 'cobertura', label: 'Cobertura' },
+                { id: 'blog', label: 'Blog' },
+                { id: 'redes', label: 'Redes' },
+                { id: 'manifiesto', label: 'Manifiesto' }
+            ];
 
             useEffect(() => {
-                const handleScroll = () => setScrolled(window.scrollY > 20);
+                const handleScroll = () => {
+                    setScrolled(window.scrollY > 20);
+                    const pos = window.scrollY + 120;
+                    let current = 'inicio';
+                    navLinks.forEach(l => {
+                        const el = document.getElementById(l.id);
+                        if (el && el.offsetTop <= pos) current = l.id;
+                    });
+                    setActive(current);
+                };
                 window.addEventListener('scroll', handleScroll);
                 return () => window.removeEventListener('scroll', handleScroll);
             }, []);
 
-            const navLinks = [
-                { id: 'home', label: 'Inicio' },
-                { id: 'videos', label: 'Videos' },
-                { id: 'entrevistas', label: 'Entrevistas' },
-                { id: 'blog', label: 'Blog' },
-                { id: 'programas', label: 'Programas' },
-                { id: 'nosotros', label: 'Nosotros' }
-            ];
+            const go = (id) => { scrollToId(id); setMobileMenu(false); };
 
             return (
                 <nav className={`fixed top-0 w-full z-[1000] transition-all duration-500 ${scrolled || mobileMenu ? 'bg-black/90 backdrop-blur-xl py-3 border-b border-white/10' : 'py-6'}`}>
                     <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setView('home')}>
+                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => go('inicio')}>
                             <img src="assets_stable/logo.jpg" alt="INNATO" className="h-8 md:h-10" />
                         </div>
 
                         {/* Desktop Links */}
                         <div className="hidden lg:flex gap-8 text-[11px] font-mono uppercase tracking-[0.2em] text-white/50">
                             {navLinks.map(link => (
-                                <button 
+                                <button
                                     key={link.id}
-                                    onClick={() => setView(link.id)}
-                                    className={`hover:text-white transition-colors ${activeView === link.id ? 'text-white red-thread' : ''}`}
+                                    onClick={() => go(link.id)}
+                                    className={`hover:text-white transition-colors ${active === link.id ? 'text-white red-thread' : ''}`}
                                 >
                                     {link.label}
                                 </button>
@@ -175,10 +205,10 @@
                         </div>
 
                         <div className="flex items-center gap-6">
-                            <button className="hidden md:flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-innato-red border border-innato-red/30 px-4 py-2 hover:bg-innato-red hover:text-white transition-all">
+                            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="hidden md:flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-innato-red border border-innato-red/30 px-4 py-2 hover:bg-innato-red hover:text-white transition-all">
                                 <span className="w-1.5 h-1.5 rounded-full bg-innato-red animate-pulse"></span>
                                 En Vivo
-                            </button>
+                            </a>
                             <button className="lg:hidden text-white" onClick={() => setMobileMenu(!mobileMenu)}>
                                 <Icon name={mobileMenu ? 'x' : 'menu'} />
                             </button>
@@ -189,18 +219,18 @@
                     {mobileMenu && (
                         <div className="lg:hidden absolute top-full left-0 w-full bg-black/95 backdrop-blur-2xl border-b border-white/10 p-8 flex flex-col gap-6 text-center">
                             {navLinks.map(link => (
-                                <button 
+                                <button
                                     key={link.id}
-                                    onClick={() => { setView(link.id); setMobileMenu(false); }}
-                                    className={`text-xl font-display italic ${activeView === link.id ? 'text-innato-red' : 'text-white'}`}
+                                    onClick={() => go(link.id)}
+                                    className={`text-xl font-display italic ${active === link.id ? 'text-innato-red' : 'text-white'}`}
                                 >
                                     {link.label}
                                 </button>
                             ))}
-                            <button className="flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-widest text-innato-red mt-4">
+                            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-widest text-innato-red mt-4">
                                 <span className="w-2 h-2 rounded-full bg-innato-red animate-pulse"></span>
                                 Señal en vivo
-                            </button>
+                            </a>
                         </div>
                     )}
                 </nav>
@@ -228,7 +258,7 @@
         // --- SECTIONS ---
 
         const HomeHero = () => (
-            <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+            <section id="inicio" className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
                 <Reveal className="grid lg:grid-cols-12 gap-12 items-center">
                     <div className="lg:col-span-7">
                         <Tag className="mb-6 text-innato-red border-innato-red/20">Historia Destacada</Tag>
@@ -240,11 +270,11 @@
                             No competimos por la primicia, competimos por la interpretación. Una plataforma para entender el Ecuador real, sin la propaganda que ensucia el debate público.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <button className="bg-white text-black px-8 py-4 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-innato-red hover:text-white transition-all flex items-center gap-3">
-                                <Icon name="play" size={14} /> Ver Última Entrevista
+                            <button onClick={() => scrollToId('ultimo')} className="bg-white text-black px-8 py-4 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-innato-red hover:text-white transition-all flex items-center gap-3">
+                                <Icon name="play" size={14} /> Ver lo último
                             </button>
-                            <button className="border border-white/20 text-white px-8 py-4 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
-                                Leer Análisis Semanal
+                            <button onClick={() => scrollToId('blog')} className="border border-white/20 text-white px-8 py-4 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
+                                Leer el análisis
                             </button>
                         </div>
                     </div>
@@ -293,16 +323,16 @@
             const cards = buildCards();
 
             return (
-                <section className="py-20 px-6 border-y border-white/5 bg-white/[0.01]">
+                <section id="ultimo" className="py-20 px-6 border-y border-white/5 bg-white/[0.01]">
                     <div className="max-w-7xl mx-auto">
                         <div className="flex justify-between items-end mb-12">
                             <div>
                                 <Tag className="mb-4">Flujo Constante</Tag>
                                 <h2 className="font-display text-4xl md:text-5xl">Lo último en INNATO</h2>
                             </div>
-                            <button className="hidden md:flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                            <a href="https://www.facebook.com/Innatoec" target="_blank" rel="noopener noreferrer" className="hidden md:flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors">
                                 Ver todo el feed <Icon name="arrow-right" size={12} />
-                            </button>
+                            </a>
                         </div>
 
                         {error && (
@@ -366,7 +396,7 @@
         };
 
         const SocialIndex = () => (
-            <section className="py-24 px-6 max-w-7xl mx-auto">
+            <section id="redes" className="py-24 px-6 max-w-7xl mx-auto">
                 <Reveal className="text-center mb-16">
                     <h2 className="font-display text-4xl md:text-6xl mb-6 italic">La conversación también vive en redes</h2>
                     <p className="text-white/40 max-w-xl mx-auto font-light">Encontramos a nuestra audiencia donde ya está. Síguenos para el análisis diario en formato corto.</p>
@@ -374,10 +404,10 @@
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                     {[
-                        { name: 'TikTok', followers: '14K', detail: '224K likes', icon: 'tiktok', color: 'hover:border-white/40', link: 'https://tiktok.com/@innatoec' },
-                        { name: 'Instagram', followers: '5K', detail: 'Seguidores', icon: 'instagram', color: 'hover:border-pink-500/40', link: 'https://instagram.com/innatoec' },
-                        { name: 'Facebook', followers: '95K', detail: 'Seguidores', icon: 'facebook', color: 'hover:border-blue-600/40', link: 'https://facebook.com/Innatoec' },
-                        { name: 'YouTube', followers: 'Canal', detail: 'Suscripciones', icon: 'youtube', color: 'hover:border-red-600/40', link: '#' }
+                        { name: 'Facebook', followers: '129K', detail: 'Seguidores', icon: 'facebook', color: 'hover:border-blue-600/40', link: 'https://facebook.com/Innatoec' },
+                        { name: 'TikTok', followers: '14K', detail: '225K likes', icon: 'tiktok', color: 'hover:border-white/40', link: 'https://tiktok.com/@innatoec' },
+                        { name: 'Instagram', followers: '5.2K', detail: 'Seguidores', icon: 'instagram', color: 'hover:border-pink-500/40', link: 'https://instagram.com/innatoec' },
+                        { name: 'YouTube', followers: '953', detail: 'Suscriptores', icon: 'youtube', color: 'hover:border-red-600/40', link: YOUTUBE_URL }
                     ].map((p, i) => (
                         <a href={p.link} target="_blank" rel="noopener noreferrer" key={i} className={`p-8 border border-white/10 text-center transition-all duration-500 cursor-pointer block group ${p.color}`}>
                             <div className="flex justify-center mb-6">
@@ -392,171 +422,205 @@
             </section>
         );
 
-        const FeaturedInterviews = () => (
-            <section className="py-24 px-6 bg-black border-y border-white/5">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
-                        <div>
-                            <Tag className="mb-4 text-innato-red border-innato-red/20">Programación Original</Tag>
-                            <h2 className="font-display text-4xl md:text-6xl">Entrevistas que importan</h2>
-                        </div>
-                        <p className="text-white/40 max-w-sm font-light text-sm">Conversaciones frontales con los actores que definen el rumbo del país. Sin filtros, sin guiones predecibles.</p>
-                    </div>
+        const EditorialBlog = () => {
+            const [posts, setPosts] = useState(null);
+            const [open, setOpen] = useState(null);
 
-                    <div className="grid lg:grid-cols-3 gap-8">
-                        {/* Main Interview Card */}
-                        <div className="lg:col-span-2 group cursor-pointer">
-                            <div className="relative overflow-hidden border border-white/10">
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
-                                <div className="absolute top-6 left-6 z-20">
-                                    <Tag className="bg-innato-red text-white border-none">En Portada</Tag>
-                                </div>
-                                <img src="assets_stable/social/feed-1.jpg" className="w-full aspect-video object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" alt="Entrevista" />
-                                <div className="absolute bottom-8 left-8 right-8 z-20">
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 flex items-center justify-center bg-white text-black rounded-full group-hover:bg-innato-red group-hover:text-white transition-all">
-                                            <Icon name="play" size={20} />
-                                        </div>
-                                        <div>
-                                            <div className="text-[10px] font-mono text-white/60 uppercase tracking-widest">Duración: 42:15</div>
-                                            <h3 className="font-display text-3xl md:text-4xl italic">Nico Armendáriz x Fiscal General</h3>
-                                        </div>
-                                    </div>
-                                    <p className="text-white/60 text-sm font-light max-w-lg">Una conversación sobre la crisis institucional, el modelo de seguridad y lo que nadie se atreve a preguntar en televisión abierta.</p>
-                                </div>
-                            </div>
+            useEffect(() => {
+                fetch('feed.json?ts=' + Date.now())
+                    .then(r => r.ok ? r.json() : Promise.reject())
+                    .then(d => setPosts(d.blog || []))
+                    .catch(() => setPosts([]));
+            }, []);
+
+            const fmt = (iso) => {
+                if (!iso) return '';
+                const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                const p = String(iso).split('-');
+                if (p.length !== 3) return iso;
+                return `${parseInt(p[2], 10)} de ${meses[parseInt(p[1], 10) - 1]}, ${p[0]}`;
+            };
+
+            return (
+                <section id="blog" className="py-24 px-6 max-w-7xl mx-auto">
+                    <div className="grid lg:grid-cols-4 gap-12">
+                        <div className="lg:col-span-1">
+                            <Tag className="mb-6">Criterio</Tag>
+                            <h2 className="font-display text-4xl mb-8">El Blog Editorial</h2>
+                            <p className="text-white/40 text-sm font-light leading-relaxed">
+                                Análisis largo, firmado y fechado. Lo que no cabe en un video de sesenta segundos.
+                            </p>
                         </div>
 
-                        {/* Sidebar Interviews */}
-                        <div className="space-y-6">
-                            {[
-                                { title: 'Análisis: El Futuro de la Energía', guest: 'Eco. Alberto Acosta', img: 'assets_stable/social/feed-2.jpg' },
-                                { title: 'Conversando con el Ciudadano', guest: 'Nico Armendáriz', img: 'assets_stable/nico-main.jpg' },
-                                { title: 'La Realidad de las Calles', guest: 'Reportaje Especial', img: 'assets_stable/social/feed-3.jpg' }
-                            ].map((item, i) => (
-                                <div key={i} className="flex gap-4 p-4 border border-white/5 hover:bg-white/5 transition-colors cursor-pointer group">
-                                    <div className="w-24 h-24 flex-shrink-0 bg-white/5 border border-white/10 overflow-hidden relative">
-                                        <img src={item.img} className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 transition-opacity" />
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                                            <Icon name="play" size={14} className="text-white" />
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col justify-center">
-                                        <div className="text-[9px] font-mono text-innato-red mb-1 uppercase tracking-widest">Entrevista</div>
-                                        <h4 className="font-display text-sm leading-tight mb-2">{item.title}</h4>
-                                        <div className="text-[9px] font-mono text-white/30 uppercase">Invitado: {item.guest}</div>
-                                    </div>
+                        <div className="lg:col-span-3">
+                            {posts === null && (
+                                <div className="text-white/20 font-mono text-xs uppercase tracking-widest py-12">Cargando análisis…</div>
+                            )}
+
+                            {posts && posts.length === 0 && (
+                                <div className="border border-white/10 border-dashed p-12 text-center">
+                                    <div className="font-display text-2xl italic text-white/40 mb-3">Próximo análisis en preparación</div>
+                                    <p className="text-white/25 text-sm font-light">El primer artículo editorial se publica pronto.</p>
                                 </div>
-                            ))}
-                            <button className="w-full py-4 border border-white/10 font-mono text-[10px] uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/5 transition-all">
-                                Ver todas las entrevistas
-                            </button>
+                            )}
+
+                            {posts && posts.length > 0 && (
+                                <div className="grid md:grid-cols-2 gap-8">
+                                    {posts.map((post, i) => (
+                                        <article key={i} className="pb-8 border-b border-white/10 group">
+                                            <div className="flex justify-between items-center mb-6">
+                                                <Tag className="text-white/40 border-white/5 bg-transparent p-0">{post.category || 'Análisis'}</Tag>
+                                                {post.readingTime && <span className="text-[9px] font-mono text-white/20">Lectura: {post.readingTime}</span>}
+                                            </div>
+                                            <h3 className="font-display text-2xl mb-4 group-hover:text-innato-red transition-colors">{post.title}</h3>
+                                            <p className="text-white/40 text-sm font-light leading-relaxed mb-6">{post.excerpt}</p>
+                                            <div className="flex items-center justify-between mb-6">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 overflow-hidden">
+                                                        <img src="assets_stable/nico-main.jpg" className="w-full h-full object-cover" alt="" />
+                                                    </div>
+                                                    <span className="text-[10px] font-mono text-white/60 uppercase">{post.author || 'Redacción INNATO'}</span>
+                                                </div>
+                                                <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">{fmt(post.date)}</span>
+                                            </div>
+                                            {post.content && (
+                                                <React.Fragment>
+                                                    <button
+                                                        onClick={() => setOpen(open === i ? null : i)}
+                                                        className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-white/40 hover:text-innato-red transition-colors"
+                                                    >
+                                                        {open === i ? 'Cerrar' : 'Leer completo'} <Icon name="arrow-right" size={12} />
+                                                    </button>
+                                                    {open === i && (
+                                                        <div
+                                                            className="mt-8 pt-8 border-t border-white/10 text-white/60 font-light leading-relaxed space-y-5 text-[15px]"
+                                                            dangerouslySetInnerHTML={{ __html: post.content }}
+                                                        />
+                                                    )}
+                                                </React.Fragment>
+                                            )}
+                                        </article>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
-                </div>
-            </section>
-        );
+                </section>
+            );
+        };
 
-        const EditorialBlog = () => (
-            <section className="py-24 px-6 max-w-7xl mx-auto">
-                <div className="grid lg:grid-cols-4 gap-12">
-                    <div className="lg:col-span-1">
-                        <Tag className="mb-6">Categorías</Tag>
-                        <h2 className="font-display text-4xl mb-8">El Blog Editorial</h2>
-                        <ul className="space-y-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
-                            {['Actualidad Interpretada', 'La trampa narrativa', 'Ecuador en contexto', 'Opinión', 'Entrevistas'].map((cat, i) => (
-                                <li key={i} className="hover:text-innato-red cursor-pointer transition-colors flex items-center gap-2">
-                                    <span className="w-1 h-1 bg-white/20 rounded-full"></span>
-                                    {cat}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div className="lg:col-span-3 grid md:grid-cols-2 gap-8">
-                        {[
-                            { title: '¿Por qué el precio de la energía no baja?', desc: 'Un análisis técnico y político sobre la matriz energética y los intereses en juego.' },
-                            { title: 'La nueva ley económica: ¿Quién gana realmente?', desc: 'Desglosamos el texto legal para entender el impacto en el bolsillo ciudadano.' },
-                            { title: 'Geopolítica: Ecuador dentro del mapa regional', desc: 'Cómo nos afectan los cambios de gobierno en los países vecinos.' },
-                            { title: 'El arte de la manipulación digital', desc: 'Cómo se construyen las tendencias falsas para desviar la atención pública.' }
-                        ].map((post, i) => (
-                            <div key={i} className="pb-8 border-b border-white/10 group cursor-pointer">
-                                <div className="flex justify-between items-center mb-6">
-                                    <Tag className="text-white/40 border-white/5 bg-transparent p-0">Actualidad</Tag>
-                                    <span className="text-[9px] font-mono text-white/20">Lectura: 6 min</span>
-                                </div>
-                                <h3 className="font-display text-2xl mb-4 group-hover:text-innato-red transition-colors">{post.title}</h3>
-                                <p className="text-white/40 text-sm font-light leading-relaxed mb-6">
-                                    {post.desc}
-                                </p>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 overflow-hidden">
-                                            <img src="assets_stable/nico-main.jpg" className="w-full h-full object-cover" />
-                                        </div>
-                                        <span className="text-[10px] font-mono text-white/60 uppercase">Nico Armendáriz</span>
-                                    </div>
-                                    <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Mayo 08, 2026</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-        );
-
-        const ProgramsGrid = () => (
-            <section className="py-24 px-6 bg-white/[0.02] border-y border-white/5">
+        const CoverageGrid = () => (
+            <section id="cobertura" className="py-24 px-6 bg-white/[0.02] border-y border-white/5">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <Tag className="mb-4">Formatos de Autor</Tag>
-                        <h2 className="font-display text-5xl md:text-6xl italic mb-6">Nuestros Programas</h2>
-                        <p className="text-white/40 max-w-xl mx-auto font-light">Estructuras de contenido diseñadas para elevar el nivel del debate público.</p>
+                        <Tag className="mb-4">Qué cubrimos</Tag>
+                        <h2 className="font-display text-5xl md:text-6xl italic mb-6">Nuestra cobertura</h2>
+                        <p className="text-white/40 max-w-xl mx-auto font-light">Tres países, cuatro formatos. Cada pieza que publicamos entra por alguna de estas puertas.</p>
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[
-                            { name: 'Actualidad Interpretada', desc: 'Qué pasó, por qué importa y qué es lo que todos están pasando por alto.' },
-                            { name: 'El Programa Ciudadano', desc: 'Conversaciones humanas y políticas lideradas por Nico Armendáriz.' },
-                            { name: 'La Trampa Narrativa', desc: 'Análisis profundo de propaganda, manipulación y encuadres políticos.' },
-                            { name: 'Ecuador en Contexto', desc: 'La política nacional analizada desde una perspectiva latinoamericana.' },
-                            { name: 'Lo que nadie está viendo', desc: 'Señales débiles y patrones que explican los movimientos del poder.' },
-                            { name: '4RADAR Allied Layer', desc: 'Inteligencia narrativa y detección de tendencias anticipadas (Próximamente).', accent: true }
-                        ].map((prog, i) => (
-                            <div key={i} className={`p-10 border ${prog.accent ? 'border-innato-red/30 bg-innato-red/5' : 'border-white/5 bg-white/5'} hover:border-white/20 transition-all group cursor-pointer`}>
-                                <div className="text-2xl font-display mb-4 italic group-hover:text-innato-red transition-colors">{prog.name}</div>
-                                <p className="text-sm font-light text-white/40 leading-relaxed">{prog.desc}</p>
-                            </div>
+                            { name: 'INNATO Ecuador', flag: '🇪🇨', icon: 'globe', desc: 'Política nacional, proceso electoral y poder local: Quito, Pichincha y la agenda del país.', link: 'https://www.tiktok.com/tag/ecuador' },
+                            { name: 'INNATO Colombia', flag: '🇨🇴', icon: 'globe', desc: 'Congreso, partidos y coyuntura colombiana leída desde la región.', link: 'https://www.tiktok.com/tag/colombia' },
+                            { name: 'INNATO Perú', flag: '🇵🇪', icon: 'globe', desc: 'La política peruana y su efecto sobre el equilibrio andino.', link: 'https://www.tiktok.com/tag/peru' },
+                            { name: 'Entrevistas', icon: 'mic', desc: 'Conversaciones directas con candidatos, asambleístas, funcionarios y periodistas de investigación.', link: 'https://www.facebook.com/Innatoec' },
+                            { name: '#URGENTE', icon: 'alert', desc: 'Hechos en desarrollo. Lo que hay que saber mientras todavía está pasando.', link: 'https://www.instagram.com/explore/tags/urgente/', accent: true },
+                            { name: 'En Vivo', icon: 'live', desc: 'Transmisiones y highlights de El Programa Ciudadano.', link: YOUTUBE_URL }
+                        ].map((item, i) => (
+                            <a
+                                key={i}
+                                href={item.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`block p-10 border ${item.accent ? 'border-innato-red/30 bg-innato-red/5' : 'border-white/5 bg-white/5'} hover:border-white/20 hover-lift transition-all group`}
+                            >
+                                <div className="flex items-center gap-3 mb-4">
+                                    <Icon name={item.icon} size={18} className="text-white/25 group-hover:text-innato-red transition-colors" />
+                                    <span className="text-2xl font-display italic group-hover:text-innato-red transition-colors">{item.name}</span>
+                                    {item.flag && <span className="text-lg">{item.flag}</span>}
+                                </div>
+                                <p className="text-sm font-light text-white/40 leading-relaxed mb-6">{item.desc}</p>
+                                <span className="flex items-center gap-2 text-[9px] font-mono uppercase tracking-widest text-white/20 group-hover:text-white transition-colors">
+                                    Ver publicaciones <Icon name="arrow-right" size={12} />
+                                </span>
+                            </a>
                         ))}
                     </div>
                 </div>
             </section>
         );
 
-        const Newsletter = () => (
+        const Newsletter = () => {
+            const [email, setEmail] = useState('');
+            const [status, setStatus] = useState('idle');
+            const sent = status === 'sent';
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setStatus('sending');
+                const body = new URLSearchParams({ 'form-name': 'newsletter', email }).toString();
+                fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body
+                })
+                    .then(r => r.ok ? setStatus('sent') : setStatus('error'))
+                    .catch(() => setStatus('error'));
+            };
+
+            return (
             <section className="py-24 px-6 bg-black relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-innato-red to-transparent opacity-30"></div>
                 <div className="max-w-3xl mx-auto text-center relative z-10">
                     <h2 className="font-display text-5xl md:text-7xl mb-8">Recibe criterio, <br/><span className="italic text-innato-red">no ruido.</span></h2>
                     <p className="text-white/60 mb-12 font-light">
-                        Únete a miles de ecuatorianos que reciben semanalmente nuestro análisis editorial directamente en su bandeja de entrada. Sin spam, solo contexto.
+                        Déjanos tu correo y recibirás nuestro análisis editorial cuando lo publiquemos. Sin spam, solo contexto.
                     </p>
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <input 
-                            type="email" 
-                            placeholder="Tu correo electrónico" 
-                            className="flex-1 bg-white/5 border border-white/10 px-6 py-4 font-mono text-xs focus:outline-none focus:border-innato-red transition-colors text-white"
-                        />
-                        <button className="bg-innato-red text-white px-10 py-4 font-mono text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">
-                            Suscribirme
-                        </button>
-                    </div>
+
+                    {sent ? (
+                        <div className="border border-innato-red/30 bg-innato-red/5 px-8 py-10">
+                            <div className="font-display text-3xl italic mb-3">Listo, quedaste dentro.</div>
+                            <p className="text-white/50 text-sm font-light">Te escribiremos a <span className="text-white/80">{email}</span> cuando salga el próximo análisis.</p>
+                        </div>
+                    ) : (
+                        <form
+                            name="newsletter"
+                            method="POST"
+                            data-netlify="true"
+                            netlify-honeypot="bot-field"
+                            onSubmit={handleSubmit}
+                        >
+                            <input type="hidden" name="form-name" value="newsletter" />
+                            <p className="hidden">
+                                <label>No llenar: <input name="bot-field" onChange={() => {}} value="" /></label>
+                            </p>
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <input
+                                    type="email"
+                                    name="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Tu correo electrónico"
+                                    className="flex-1 bg-white/5 border border-white/10 px-6 py-4 font-mono text-xs focus:outline-none focus:border-innato-red transition-colors text-white"
+                                />
+                                <button type="submit" disabled={status === 'sending'} className="bg-innato-red text-white px-10 py-4 font-mono text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all disabled:opacity-40">
+                                    {status === 'sending' ? 'Enviando…' : 'Suscribirme'}
+                                </button>
+                            </div>
+                            {status === 'error' && (
+                                <p className="mt-4 text-[10px] font-mono text-innato-red uppercase tracking-widest">No se pudo enviar. Intentalo de nuevo.</p>
+                            )}
+                        </form>
+                    )}
                     <p className="mt-6 text-[10px] font-mono text-white/20 uppercase tracking-widest">Privacidad garantizada. Tu información es solo nuestra.</p>
                 </div>
             </section>
-        );
+            );
+        };
 
         const Manifesto = () => (
-            <section className="py-32 px-6 border-y border-white/5">
+            <section id="manifiesto" className="py-32 px-6 border-y border-white/5">
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="font-mono text-[10px] uppercase tracking-[0.5em] text-innato-red mb-16 italic">Nuestro Manifiesto</h2>
                     <p className="font-display text-3xl md:text-5xl lg:text-6xl leading-tight font-light mb-16">
@@ -582,87 +646,49 @@
                         <div>
                             <h4 className="font-mono text-white text-[10px] uppercase tracking-[0.4em] mb-8">Navegación</h4>
                             <ul className="space-y-4 text-xs text-white/40 font-mono uppercase tracking-widest">
-                                <li><a href="#" className="hover:text-innato-red transition-colors">Videos</a></li>
-                                <li><a href="#" className="hover:text-innato-red transition-colors">Entrevistas</a></li>
-                                <li><a href="#" className="hover:text-innato-red transition-colors">Blog Editorial</a></li>
-                                <li><a href="#" className="hover:text-innato-red transition-colors">Programas</a></li>
+                                <li><button onClick={() => scrollToId('ultimo')} className="hover:text-innato-red transition-colors uppercase">Lo último</button></li>
+                                <li><button onClick={() => scrollToId('cobertura')} className="hover:text-innato-red transition-colors uppercase">Cobertura</button></li>
+                                <li><button onClick={() => scrollToId('blog')} className="hover:text-innato-red transition-colors uppercase">Blog Editorial</button></li>
+                                <li><button onClick={() => scrollToId('manifiesto')} className="hover:text-innato-red transition-colors uppercase">Manifiesto</button></li>
                             </ul>
                         </div>
                         <div>
                             <h4 className="font-mono text-white text-[10px] uppercase tracking-[0.4em] mb-8">Contacto</h4>
                             <ul className="space-y-4 text-xs text-white/40 font-mono uppercase tracking-widest">
-                                <li><a href="#" className="hover:text-innato-red transition-colors">Publicidad</a></li>
-                                <li><a href="#" className="hover:text-innato-red transition-colors">Entrevistas</a></li>
-                                <li><a href="#" className="hover:text-innato-red transition-colors">Alianzas</a></li>
-                                <li><a href="#" className="hover:text-innato-red transition-colors">Colaborar</a></li>
+                                <li><a href="https://wa.me/593997862120" target="_blank" rel="noopener noreferrer" className="hover:text-innato-red transition-colors">WhatsApp</a></li>
+                                <li><a href="https://www.facebook.com/Innatoec" target="_blank" rel="noopener noreferrer" className="hover:text-innato-red transition-colors">Messenger</a></li>
+                                <li><a href="https://www.instagram.com/innatoec/" target="_blank" rel="noopener noreferrer" className="hover:text-innato-red transition-colors">Instagram DM</a></li>
                             </ul>
                         </div>
                     </div>
                     <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
                         <div className="text-[10px] font-mono text-white/20 uppercase tracking-[0.2em]">© 2026 INNATO | MEDIO DIGITAL INDEPENDIENTE.</div>
                         <div className="flex gap-8 text-[10px] font-mono text-white/30 uppercase tracking-widest">
-                            <a href="https://tiktok.com/@innatoec" target="_blank" className="hover:text-white">TikTok</a>
-                            <a href="#" className="hover:text-white">YouTube</a>
-                            <a href="https://instagram.com/innatoec" target="_blank" className="hover:text-white">Instagram</a>
-                            <a href="https://facebook.com/Innatoec" target="_blank" className="hover:text-white">Facebook</a>
+                            <a href="https://tiktok.com/@innatoec" target="_blank" rel="noopener noreferrer" className="hover:text-white">TikTok</a>
+                            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white">YouTube</a>
+                            <a href="https://instagram.com/innatoec" target="_blank" rel="noopener noreferrer" className="hover:text-white">Instagram</a>
+                            <a href="https://facebook.com/Innatoec" target="_blank" rel="noopener noreferrer" className="hover:text-white">Facebook</a>
                         </div>
                     </div>
                 </div>
             </footer>
         );
 
-        // --- VIEWS ---
-
-        const HomeView = ({ setView }) => (
-            <>
-                <HomeHero />
-                <LatestFeed />
-                <SocialIndex />
-                <FeaturedInterviews />
-                <EditorialBlog />
-                <ProgramsGrid />
-                <Newsletter />
-                <Manifesto />
-            </>
-        );
-
-        const GenericView = ({ title, desc }) => (
-            <div className="pt-40 pb-32 px-6 max-w-7xl mx-auto min-h-screen">
-                <Tag className="mb-6">Vista en Desarrollo</Tag>
-                <h1 className="font-display text-6xl md:text-8xl mb-8 italic">{title}</h1>
-                <p className="text-white/40 max-w-2xl text-xl font-light mb-16">{desc}</p>
-                <div className="grid md:grid-cols-3 gap-8 opacity-20 grayscale pointer-events-none">
-                    {[1, 2, 3, 4, 5, 6].map(i => (
-                        <div key={i} className="h-64 border border-white/10 bg-white/5"></div>
-                    ))}
-                </div>
-            </div>
-        );
-
         // --- APP ---
 
-        const App = () => {
-            const [view, setView] = useState('home');
-
-            useEffect(() => {
-                window.scrollTo(0, 0);
-            }, [view]);
-
-            return (
-                <div className="selection:bg-innato-red selection:text-white">
-                    <Nav activeView={view} setView={setView} />
-                    
-                    {view === 'home' && <HomeView setView={setView} />}
-                    {view === 'videos' && <GenericView title="Videos" desc="Nuestra videoteca completa. Análisis en formato vertical y horizontal para todas las plataformas." />}
-                    {view === 'entrevistas' && <GenericView title="Entrevistas" desc="Conversaciones frontales con los protagonistas de la política ecuatoriana." />}
-                    {view === 'blog' && <GenericView title="Blog Editorial" desc="Análisis profundo y criterio sobre los temas que definen la agenda nacional." />}
-                    {view === 'programas' && <GenericView title="Programas" desc="Nuestros formatos originales diseñados para la claridad ciudadana." />}
-                    {view === 'nosotros' && <GenericView title="Nosotros" desc="Conoce al equipo y la visión detrás de la plataforma INNATO." />}
-
-                    <Footer />
-                </div>
-            );
-        };
+        const App = () => (
+            <div className="selection:bg-innato-red selection:text-white">
+                <Nav />
+                <HomeHero />
+                <LatestFeed />
+                <CoverageGrid />
+                <EditorialBlog />
+                <SocialIndex />
+                <Newsletter />
+                <Manifesto />
+                <Footer />
+            </div>
+        );
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);

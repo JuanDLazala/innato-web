@@ -12,12 +12,15 @@ desktop.ini
 # Netlify
 .netlify/
 
+# Node (herramientas locales, no forman parte del sitio)
+node_modules/
+package.json
+package-lock.json
+
 # Logs
 *.log
 npm-debug.log*
 
-# Source PNG screenshots (los JPG comprimidos sí se suben)
+# Capturas fuente en PNG (los JPG comprimidos si se suben)
 assets_stable/social/*-latest.png
-
-# Source PNG screenshots (los JPG comprimidos sí se suben)
-assets_stable/social/*-latest.png
+assets_stable/social/*-latest.jpg
