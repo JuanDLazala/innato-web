@@ -2,22 +2,22 @@
   "_comment": "Editar este archivo y hacer git push para actualizar el feed de la home. Cache: 60 segundos.",
   "social": {
     "tiktok": {
-      "url": "https://www.tiktok.com/@innatoec/photo/7637515059467537684",
-      "title": "Entrevista a César Martín, Presidente del Consejo de Comunicación de Ecuador",
+      "url": "https://www.tiktok.com/@innatoec/photo/7668719703908519186",
+      "title": "Keiko Fujimori recibe a Jamil Mahuad: el legado del Acuerdo de Paz entre Perú y Ecuador",
       "thumbnail": "assets_stable/social/tiktok-latest.jpg",
-      "date": "Hoy"
+      "date": "hace 3 días"
     },
     "instagram": {
-      "url": "https://www.instagram.com/p/DYEz4BKubqY/",
-      "title": "Jair Guadarrama: comunicación política e identidad de marca",
+      "url": "https://www.instagram.com/innatoec/reel/DbjgnQVsDY9/",
+      "title": "Jaime Arizabaleta, Representante a la Cámara por Valle del Cauca, sobre el proyecto de Ley Anticapuchos",
       "thumbnail": "assets_stable/social/instagram-latest.jpg",
       "date": "Ayer"
     },
     "facebook": {
-      "url": "https://www.facebook.com/reel/1298248928414684/?s=single_unit",
-      "title": "Guillermo Lasso: enfrenta el intento de inventarle un delito",
+      "url": "https://www.facebook.com/reel/1482948960258480",
+      "title": "Carla Larrea Falconí, precandidata a la Alcaldía de Quito",
       "thumbnail": "assets_stable/social/facebook-latest.jpg",
-      "date": "hace 2 horas"
+      "date": "Hoy"
     }
   },
   "blog": []
