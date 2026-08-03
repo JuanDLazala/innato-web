@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets_stable/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../assets_stable/favicon-512.png">
+    <link rel="apple-touch-icon" href="../assets_stable/apple-touch-icon.png">
+    <meta name="theme-color" content="#BFEE00">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>Blog Editorial | INNATOec</title>
+    <meta name="description" content="Análisis largo, firmado y fechado sobre la política de Ecuador, Colombia y Perú.">
+    <link rel="canonical" href="https://innatoec.com/blog/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="INNATOec">
+    <meta property="og:url" content="https://innatoec.com/blog/">
+    <meta property="og:title" content="Blog Editorial | INNATOec">
+    <meta property="og:description" content="Análisis largo, firmado y fechado sobre la política de Ecuador, Colombia y Perú.">
+    <meta property="og:image" content="https://innatoec.com/assets_stable/og-innatoec.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://innatoec.com/assets_stable/og-innatoec.jpg">
+    <style>
+    :root{--ink:#000;--surface:#0F0F11;--paper:#fff;--muted:#8A8A8F;--line:#1F1F23;--lime:#BFEE00;--alert:#E11D48}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--ink);color:var(--paper);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+    .mono{font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.2em;font-size:10px}
+    .display{font-family:Newsreader,Georgia,serif;font-weight:300}
+    nav{position:sticky;top:0;z-index:50;background:rgba(0,0,0,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+    nav .caja{max-width:1120px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    nav img{height:34px;display:block}
+    nav .vinculos{display:flex;gap:28px}
+    nav .vinculos a{color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s}
+    nav .vinculos a:hover{color:#fff}
+    .envoltura{max-width:720px;margin:0 auto;padding:64px 24px 96px}
+    .etiqueta{display:inline-block;border:1px solid var(--line);padding:5px 10px;color:rgba(255,255,255,.6)}
+    h1{font-family:Newsreader,Georgia,serif;font-weight:300;font-size:clamp(34px,5.5vw,60px);line-height:1.08;margin:26px 0 22px}
+    .bajada{font-size:19px;line-height:1.65;color:rgba(255,255,255,.55);font-weight:300;margin:0 0 34px}
+    .credito{display:flex;flex-wrap:wrap;gap:18px;align-items:center;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted)}
+    .cuerpo{font-size:17.5px;line-height:1.8;color:rgba(255,255,255,.82);font-weight:300;margin-top:44px}
+    .cuerpo p{margin:0 0 26px}
+    .cuerpo h3{font-family:Newsreader,Georgia,serif;font-weight:400;font-size:26px;color:#fff;margin:44px 0 18px}
+    .certeza{margin-top:56px;border-left:3px solid;padding:16px 20px;background:rgba(255,255,255,.03)}
+    .certeza .n{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+    .certeza .d{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.6}
+    .compartir{margin-top:56px;padding-top:32px;border-top:1px solid var(--line)}
+    .compartir a{display:inline-block;margin-right:10px;margin-top:12px;border:1px solid var(--line);padding:11px 18px;text-decoration:none;color:rgba(255,255,255,.6);transition:all .2s}
+    .compartir a:hover{border-color:var(--lime);color:var(--lime)}
+    .tarjetas{display:grid;gap:2px;background:var(--line);border:1px solid var(--line)}
+    .tarjeta{background:var(--ink);padding:34px 30px;text-decoration:none;display:block;transition:background .25s}
+    .tarjeta:hover{background:var(--surface)}
+    .tarjeta h2{font-family:Newsreader,Georgia,serif;font-weight:300;font-size:29px;line-height:1.2;margin:16px 0 14px;transition:color .2s}
+    .tarjeta:hover h2{color:var(--lime)}
+    .tarjeta p{color:rgba(255,255,255,.45);font-size:15.5px;line-height:1.7;font-weight:300;margin:0}
+    .fila{display:flex;justify-content:space-between;align-items:center;color:var(--muted)}
+    footer{border-top:1px solid var(--line);padding:44px 24px;text-align:center;color:rgba(255,255,255,.25)}
+    footer a{color:rgba(255,255,255,.45);text-decoration:none}
+    footer a:hover{color:var(--lime)}
+    .volver{text-decoration:none;color:var(--muted);transition:color .2s}
+    .volver:hover{color:var(--lime)}
+    @media(max-width:640px){nav .vinculos{display:none}}
+</style>
+</head>
+<body>
+<nav><div class="caja">
+      <a href="../"><img src="../assets_stable/logotipo-ec.svg" alt="INNATOec"></a>
+      <div class="vinculos mono">
+        <a href="../">Inicio</a>
+        <a href="../blog/">Blog</a>
+        <a href="../#cobertura">Cobertura</a>
+        <a href="../#redes">Redes</a>
+      </div>
+    </div></nav>
+  <div class="envoltura" style="max-width:960px">
+    <span class="etiqueta mono">Criterio</span>
+    <h1 style="margin-bottom:16px">El Blog Editorial</h1>
+    <p class="bajada" style="max-width:560px">Análisis largo, firmado y fechado. Lo que no cabe en un video de sesenta segundos.</p>
+    <div class="tarjetas" style="margin-top:46px">
+      <a class="tarjeta" href="../blog/adn-invirtio-sus-candidaturas-en-pichincha/">
+        <div class="fila mono">
+          <span>Ecuador en contexto</span>
+          <span>3 de agosto de 2026</span>
+        </div>
+        <h2>ADN invirtió sus candidaturas en Pichincha y lo llamó escuchar a la gente</h2>
+        <p>El movimiento de gobierno intercambió a sus dos cartas principales justo al inscribirlas. La explicación oficial cabe en una frase; el procedimiento que la sustenta, en ninguna.</p>
+      </a>
+    </div>
+  </div>
+<footer class="mono">
+      <div>© 2026 INNATOec · Medio digital independiente</div>
+      <div style="margin-top:14px">
+        <a href="https://facebook.com/Innatoec" target="_blank" rel="noopener">Facebook</a> ·
+        <a href="https://instagram.com/innatoec" target="_blank" rel="noopener">Instagram</a> ·
+        <a href="https://tiktok.com/@innatoec" target="_blank" rel="noopener">TikTok</a> ·
+        <a href="https://www.youtube.com/@InnatoecOF" target="_blank" rel="noopener">YouTube</a>
+      </div>
+    </footer>
+</body>
+</html>

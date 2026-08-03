@@ -100,11 +100,46 @@ Todo el contenido dinámico vive en **`feed.json`** (raíz del proyecto). Cambia
 
 ### Workflow para un nuevo post de blog
 
-1. Agregar un objeto **al inicio** del array `blog` en `feed.json` (el primero del array es el destacado en la home).
-2. Si tiene imagen, guardarla en `assets_stable/blog/` y referenciarla en `thumbnail`.
-3. `git add . && git commit -m "blog: nuevo post X" && git push`.
+Cada entrada tiene **su propia página y su propia URL** (`innatoec.com/blog/<slug>/`), con metadatos propios para compartir. Eso obliga a un paso extra: generar los archivos.
 
-> El detalle del post (página individual al hacer click en una tarjeta) se implementa en una segunda iteración. Por ahora la tarjeta lleva a `#blog/<slug>`.
+**1. Agregar la entrada al array `blog` de `feed.json`:**
+
+```json
+{
+  "slug": "url-de-la-nota",
+  "title": "Titular de la nota",
+  "excerpt": "Bajada de una o dos frases.",
+  "date": "2026-08-03",
+  "category": "Ecuador en contexto",
+  "author": "Redacción INNATOec",
+  "readingTime": "4 min",
+  "nivel": "VERIFICADO",
+  "fuente": "El Universo · Primicias",
+  "thumbnail": "assets_stable/innato-hero.jpg",
+  "content": "<p>Cuerpo en HTML. Usar &lt;h3&gt; para subtítulos.</p>"
+}
+```
+
+`nivel` es obligatorio: `VERIFICADO`, `DECLARACIÓN` o `EN DESARROLLO`. Ver la sección 6 del brand book.
+
+**2. Generar las páginas y los artes de compartir:**
+
+```
+cd ..
+python scripts/generar_og_notas.py
+python scripts/generar_blog.py
+cd deploy
+```
+
+Esto crea `blog/<slug>/index.html`, regenera `blog/index.html` y produce `assets_stable/og/<slug>.jpg` con el titular sobre la plancha lima.
+
+**3. Publicar:**
+
+```
+git add . && git commit -m "blog: nueva entrada X" && git push
+```
+
+> **Por qué páginas estáticas y no rutas de JavaScript**: los rastreadores de WhatsApp, Facebook y X no ejecutan JS. Sin un HTML real por nota, todas compartirían la misma tarjeta y la pauta publicitaria no podría segmentar por nota.
 
 ## Notas técnicas
 - El sitio usa Tailwind y React desde CDN (sin build step). Para producción seria conviene migrar a un build estático, pero para el MVP esto funciona perfecto.

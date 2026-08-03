@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INNATOec | Medio Digital Ecuatoriano</title>
     <meta name="description" content="Análisis político de Ecuador, Colombia y Perú. No competimos por la primicia, competimos por la interpretación.">
-    <link rel="canonical" href="https://www.innatoec.com/">
+    <link rel="canonical" href="https://innatoec.com/">
 
     <!-- Iconos -->
     <link rel="icon" type="image/png" sizes="32x32" href="assets_stable/favicon-32.png">
@@ -17,11 +17,11 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="INNATOec">
     <meta property="og:locale" content="es_EC">
-    <meta property="og:url" content="https://www.innatoec.com/">
+    <meta property="og:url" content="https://innatoec.com/">
     <meta property="og:title" content="INNATOec | Medio Digital Ecuatoriano">
     <meta property="og:description" content="Análisis político de Ecuador, Colombia y Perú. No competimos por la primicia, competimos por la interpretación.">
-    <meta property="og:image" content="https://www.innatoec.com/assets_stable/og-innatoec.jpg">
-    <meta property="og:image:secure_url" content="https://www.innatoec.com/assets_stable/og-innatoec.jpg">
+    <meta property="og:image" content="https://innatoec.com/assets_stable/og-innatoec.jpg">
+    <meta property="og:image:secure_url" content="https://innatoec.com/assets_stable/og-innatoec.jpg">
     <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -31,7 +31,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="INNATOec | Medio Digital Ecuatoriano">
     <meta name="twitter:description" content="Análisis político de Ecuador, Colombia y Perú. No competimos por la primicia, competimos por la interpretación.">
-    <meta name="twitter:image" content="https://www.innatoec.com/assets_stable/og-innatoec.jpg">
+    <meta name="twitter:image" content="https://innatoec.com/assets_stable/og-innatoec.jpg">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -346,7 +346,7 @@
                     s.instagram && { type: 'Instagram', platform: 'instagram', title: s.instagram.title, date: s.instagram.date, img: s.instagram.thumbnail, link: s.instagram.url, external: true },
                     s.facebook && { type: 'Facebook', platform: 'facebook', title: s.facebook.title, date: s.facebook.date, img: s.facebook.thumbnail, link: s.facebook.url, external: true },
                     latestBlog
-                        ? { type: 'Blog', platform: 'eye', title: latestBlog.title, date: latestBlog.date, img: latestBlog.thumbnail, link: '#blog/' + latestBlog.slug, external: false }
+                        ? { type: 'Blog', platform: 'eye', title: latestBlog.title, date: latestBlog.date, img: latestBlog.thumbnail, link: 'blog/' + latestBlog.slug + '/', external: false }
                         : { type: 'Blog', platform: 'eye', title: 'Próximo análisis en preparación', date: 'Pronto', img: 'assets_stable/innato-hero.jpg', link: null, external: false, placeholder: true }
                 ].filter(Boolean);
             };
@@ -497,8 +497,8 @@
 
                             {posts && posts.length > 0 && (
                                 <div className="grid md:grid-cols-2 gap-8">
-                                    {posts.map((post, i) => (
-                                        <article key={i} className="pb-8 border-b border-white/10 group">
+                                    {posts.slice(0, 4).map((post, i) => (
+                                        <a key={i} href={'blog/' + post.slug + '/'} className="block pb-8 border-b border-white/10 group">
                                             <div className="flex justify-between items-center mb-6">
                                                 <Tag className="text-white/40 border-white/5 bg-transparent p-0">{post.category || 'Análisis'}</Tag>
                                                 {post.readingTime && <span className="text-[9px] font-mono text-white/20">Lectura: {post.readingTime}</span>}
@@ -506,31 +506,13 @@
                                             <h3 className="font-display text-2xl mb-4 group-hover:text-innato-lime transition-colors">{post.title}</h3>
                                             <p className="text-white/40 text-sm font-light leading-relaxed mb-6">{post.excerpt}</p>
                                             <div className="flex items-center justify-between mb-6">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 overflow-hidden">
-                                                        <img src="assets_stable/nico-main.jpg" className="w-full h-full object-cover" alt="" />
-                                                    </div>
-                                                    <span className="text-[10px] font-mono text-white/60 uppercase">{post.author || 'Redacción INNATO'}</span>
-                                                </div>
+                                                <span className="text-[10px] font-mono text-white/60 uppercase">{post.author || 'Redacción INNATOec'}</span>
                                                 <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">{fmt(post.date)}</span>
                                             </div>
-                                            {post.content && (
-                                                <React.Fragment>
-                                                    <button
-                                                        onClick={() => setOpen(open === i ? null : i)}
-                                                        className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-white/40 hover:text-innato-lime transition-colors"
-                                                    >
-                                                        {open === i ? 'Cerrar' : 'Leer completo'} <Icon name="arrow-right" size={12} />
-                                                    </button>
-                                                    {open === i && (
-                                                        <div
-                                                            className="mt-8 pt-8 border-t border-white/10 text-white/60 font-light leading-relaxed space-y-5 text-[15px]"
-                                                            dangerouslySetInnerHTML={{ __html: post.content }}
-                                                        />
-                                                    )}
-                                                </React.Fragment>
-                                            )}
-                                        </article>
+                                            <span className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-white/40 group-hover:text-innato-lime transition-colors">
+                                                Leer la nota <Icon name="arrow-right" size={12} />
+                                            </span>
+                                        </a>
                                     ))}
                                 </div>
                             )}
@@ -679,7 +661,7 @@
                             <ul className="space-y-4 text-xs text-white/40 font-mono uppercase tracking-widest">
                                 <li><button onClick={() => scrollToId('ultimo')} className="hover:text-innato-lime transition-colors uppercase">Lo último</button></li>
                                 <li><button onClick={() => scrollToId('cobertura')} className="hover:text-innato-lime transition-colors uppercase">Cobertura</button></li>
-                                <li><button onClick={() => scrollToId('blog')} className="hover:text-innato-lime transition-colors uppercase">Blog Editorial</button></li>
+                                <li><a href="blog/" className="hover:text-innato-lime transition-colors uppercase">Blog Editorial</a></li>
                                 <li><button onClick={() => scrollToId('manifiesto')} className="hover:text-innato-lime transition-colors uppercase">Manifiesto</button></li>
                             </ul>
                         </div>
